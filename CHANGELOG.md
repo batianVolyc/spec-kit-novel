@@ -7,6 +7,18 @@ All notable changes to the Specify CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Re-oriented the toolkit for long-form fiction: `/spark`, `/lore`, `/weave`, `/draft`, and `/adapt` replace the software-oriented slash commands.
+- `specify init` now overlays novel-specific templates, scripts, prompt profiles, and scaffolding (ideas, lore, characters, plots, chapters, timelines, adaptation logs).
+- Added resource packaging so `templates/`, `scripts/`, and `config/` ship with the wheel.
+
+### Added
+- Story templates for world bibles, character dossiers, outlines, arcs, timelines, project overview, and adaptation logs.
+- Prompt profiles (`config/prompt-profiles.toml`) to guide agents through ideation, lore, plotting, drafting, and adaptation phases.
+- Bash/PowerShell helpers to create idea sessions, set up lore and plotting folders, manage draft/final chapters, and apply adaptations with log rotation.
+
 ## [0.0.16] - 2025-09-22
 
 ### Added

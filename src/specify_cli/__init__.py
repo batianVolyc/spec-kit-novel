@@ -30,6 +30,7 @@ import tempfile
 import shutil
 import shlex
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -701,6 +702,128 @@ def download_and_extract_template(project_path: Path, ai_assistant: str, script_
     return project_path
 
 
+def _resource_root() -> Path:
+    """Locate repository or package root that stores templates/scripts/config."""
+    file_root = Path(__file__).resolve()
+    candidates = [file_root.parent.parent.parent, file_root.parent]
+    for candidate in candidates:
+        if (candidate / "templates").exists():
+            return candidate
+    return file_root.parent.parent.parent
+
+
+def _replace_directory(src: Path, dest: Path) -> None:
+    if not src.exists():
+        raise FileNotFoundError(f"Resource directory not found: {src}")
+    if dest.exists():
+        shutil.rmtree(dest)
+    shutil.copytree(src, dest)
+
+
+def apply_novel_scaffold(project_path: Path, tracker: StepTracker | None = None) -> None:
+    """Overlay novel-writing assets and initialise creative workspace directories."""
+    if tracker:
+        tracker.start("novel", "apply story toolkit")
+
+    try:
+        resource_root = _resource_root()
+        specify_dir = project_path / ".specify"
+        templates_root = resource_root / "templates"
+        scripts_root = resource_root / "scripts"
+        config_root = resource_root / "config"
+
+        commands_src = templates_root / "commands"
+        story_src = templates_root / "story"
+        gemini_commands_src = templates_root / "agents" / "gemini" / "commands"
+        commands_dest = specify_dir / "templates" / "commands"
+        story_dest = specify_dir / "templates" / "story"
+
+        commands_dest.parent.mkdir(parents=True, exist_ok=True)
+        story_dest.parent.mkdir(parents=True, exist_ok=True)
+        _replace_directory(commands_src, commands_dest)
+        _replace_directory(story_src, story_dest)
+
+        gemini_dest = project_path / ".gemini" / "commands"
+        if gemini_commands_src.exists():
+            gemini_dest.parent.mkdir(parents=True, exist_ok=True)
+            _replace_directory(gemini_commands_src, gemini_dest)
+
+        # Scripts for bash and PowerShell (root + .specify copies)
+        if scripts_root.exists():
+            _replace_directory(scripts_root, project_path / "scripts")
+            for shell_name in ("bash", "powershell"):
+                shell_src = scripts_root / shell_name
+                if shell_src.exists():
+                    shell_dest = specify_dir / "scripts" / shell_name
+                    shell_dest.parent.mkdir(parents=True, exist_ok=True)
+                    _replace_directory(shell_src, shell_dest)
+
+        # Prompt configuration
+        if config_root.exists():
+            config_dest = specify_dir / "config"
+            config_dest.mkdir(parents=True, exist_ok=True)
+            for item in config_root.iterdir():
+                target = config_dest / item.name
+                if item.is_dir():
+                    _replace_directory(item, target)
+                else:
+                    shutil.copy2(item, target)
+
+        # Creative workspace directories
+        for directory in [
+            project_path / "ideas",
+            project_path / "lore",
+            project_path / "characters",
+            project_path / "plots",
+            project_path / "chapters" / "draft",
+            project_path / "chapters" / "final",
+            project_path / "timelines",
+            project_path / "logs" / "adaptations",
+        ]:
+            directory.mkdir(parents=True, exist_ok=True)
+
+        adaptation_index = project_path / "logs" / "adaptations" / "index.md"
+        if not adaptation_index.exists():
+            adaptation_index.write_text(
+                "# Adaptation Log Index\n\n- [adaptations_001-050.md](adaptations_001-050.md)\n",
+                encoding="utf-8",
+            )
+
+        first_log = project_path / "logs" / "adaptations" / "adaptations_001-050.md"
+        if not first_log.exists():
+            template_file = story_dest / "adaptation-log-template.md"
+            if template_file.exists():
+                content = template_file.read_text(encoding="utf-8").replace("[RANGE]", "001-050")
+                first_log.write_text(content, encoding="utf-8")
+            else:
+                first_log.write_text(
+                    "# Adaptation Log 001-050\n\n| Entry | Date | Trigger | Affected Artifacts | Summary |\n| ----- | ---- | ------- | ------------------ | ------- |\n",
+                    encoding="utf-8",
+                )
+
+        overview_path = project_path / "project_overview.md"
+        if not overview_path.exists():
+            overview_template = story_dest / "project-overview-template.md"
+            if overview_template.exists():
+                overview_content = overview_template.read_text(encoding="utf-8")
+                overview_content = overview_content.replace("[TITLE]", "Working Title")
+                overview_content = overview_content.replace("[DATE]", datetime.now().strftime("%Y-%m-%d"))
+                overview_path.write_text(overview_content, encoding="utf-8")
+            else:
+                overview_path.write_text(
+                    "# Project Overview\n\n(Generated via /weave)\n",
+                    encoding="utf-8",
+                )
+
+    except Exception as exc:
+        if tracker:
+            tracker.error("novel", str(exc))
+        raise
+    else:
+        if tracker:
+            tracker.complete("novel", "story toolkit ready")
+
+
 def ensure_executable_scripts(project_path: Path, tracker: StepTracker | None = None) -> None:
     """Ensure POSIX .sh scripts under .specify/scripts (recursively) have execute bits (no-op on Windows)."""
     if os.name == "nt":
@@ -949,6 +1072,7 @@ def init(
         ("extract", "Extract template"),
         ("zip-list", "Archive contents"),
         ("extracted-summary", "Extraction summary"),
+        ("novel", "Apply story scaffolding"),
         ("chmod", "Ensure scripts executable"),
         ("cleanup", "Cleanup"),
         ("git", "Initialize git repository"),
@@ -966,6 +1090,8 @@ def init(
             local_client = httpx.Client(verify=local_ssl_context)
 
             download_and_extract_template(project_path, selected_ai, selected_script, here, verbose=False, tracker=tracker, client=local_client, debug=debug, github_token=github_token)
+
+            apply_novel_scaffold(project_path, tracker=tracker)
 
             # Ensure scripts are executable (POSIX)
             ensure_executable_scripts(project_path, tracker=tracker)
@@ -1057,12 +1183,12 @@ def init(
         steps_lines.append(f"{step_num}. Set [cyan]CODEX_HOME[/cyan] environment variable before running Codex: [cyan]{cmd}[/cyan]")
         step_num += 1
 
-    steps_lines.append(f"{step_num}. Start using slash commands with your AI agent:")
-    steps_lines.append("   2.1 [cyan]/constitution[/] - Establish project principles")
-    steps_lines.append("   2.2 [cyan]/specify[/] - Create specifications")
-    steps_lines.append("   2.3 [cyan]/plan[/] - Create implementation plans")
-    steps_lines.append("   2.4 [cyan]/tasks[/] - Generate actionable tasks")
-    steps_lines.append("   2.5 [cyan]/implement[/] - Execute implementation")
+    steps_lines.append(f"{step_num}. Start the story workflow with your AI agent:")
+    steps_lines.append("   2.1 [cyan]/spark[/] - 打磨创意、提出必要追问与增补选项")
+    steps_lines.append("   2.2 [cyan]/lore[/] - 生成世界观与人物档案，补齐资料")
+    steps_lines.append("   2.3 [cyan]/weave[/] - 输出剧情纲要与篇章节奏")
+    steps_lines.append("   2.4 [cyan]/draft[/] - 写作章节草稿、自审后落稿")
+    steps_lines.append("   2.5 [cyan]/adapt[/] - 处理改写、异常与剧情调整")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1,2))
     console.print()

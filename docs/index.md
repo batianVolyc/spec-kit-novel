@@ -1,62 +1,38 @@
-# Spec Kit
+# Spec Kit · Novel
 
-*Build high-quality software faster.*
+*Turn spark ideas into finished fiction with a spec-driven workflow.*
 
-**An effort to allow organizations to focus on product scenarios rather than writing undifferentiated code with the help of Spec-Driven Development.**
+Spec Kit · Novel repurposes the original Spec Kit infrastructure for long-form storytelling. The CLI, templates, and scripts now guide you from hazy concepts through world-building, plotting, drafting, and retcons—while keeping the same installation flow as upstream.
 
-## What is Spec-Driven Development?
-
-Spec-Driven Development **flips the script** on traditional software development. For decades, code has been king — specifications were just scaffolding we built and discarded once the "real work" of coding began. Spec-Driven Development changes this: **specifications become executable**, directly generating working implementations rather than just guiding them.
-
-## Getting Started
+## Start Here
 
 - [Installation Guide](installation.md)
 - [Quick Start Guide](quickstart.md)
 - [Local Development](local-development.md)
 
-## Core Philosophy
+## Workflow Pillars
 
-Spec-Driven Development is a structured process that emphasizes:
+| Phase | Command | Focus |
+| ----- | ------- | ----- |
+| Ideation | `/spark` | Capture the pitch, ask targeted questions, offer refinement options, track decisions. |
+| Lore | `/lore` | Build world bible, dual-identity dossiers, roster, and missing facts list. |
+| Plotting | `/weave` | Shape acts, chapter beats, relationship dynamics, and update the project overview. |
+| Drafting | `/draft` | Produce chapters with self-review, update timelines, and keep character continuity. |
+| Adaptation | `/adapt` | Apply midstream changes across all artifacts with full traceability. |
 
-- **Intent-driven development** where specifications define the "_what_" before the "_how_"
-- **Rich specification creation** using guardrails and organizational principles
-- **Multi-step refinement** rather than one-shot code generation from prompts
-- **Heavy reliance** on advanced AI model capabilities for specification interpretation
+Each command writes to structured Markdown files so both humans and AI agents can follow the evolving canon.
 
-## Development Phases
+## Design Goals
 
-| Phase | Focus | Key Activities |
-|-------|-------|----------------|
-| **0-to-1 Development** ("Greenfield") | Generate from scratch | <ul><li>Start with high-level requirements</li><li>Generate specifications</li><li>Plan implementation steps</li><li>Build production-ready applications</li></ul> |
-| **Creative Exploration** | Parallel implementations | <ul><li>Explore diverse solutions</li><li>Support multiple technology stacks & architectures</li><li>Experiment with UX patterns</li></ul> |
-| **Iterative Enhancement** ("Brownfield") | Brownfield modernization | <ul><li>Add features iteratively</li><li>Modernize legacy systems</li><li>Adapt processes</li></ul> |
+- **Spec-first fiction** – Treat outlines, timelines, and dossiers as executable artefacts that drive drafts.
+- **Human-quality prose** – Prompt profiles emphasise natural, varied language and discourage AI stock phrasing.
+- **Continuity safety nets** – Automatic timeline rotation, adaptation logs, and character evolution tables keep sprawling narratives coherent.
+- **Agent flexibility** – Works with Claude Code, Gemini CLI, Cursor, Copilot, Qwen Code, and more; prompts compensate when model knobs (e.g. temperature) are unavailable.
 
-## Experimental Goals
+## Extending the Toolkit
 
-Our research and experimentation focus on:
+- Adjust prompt behaviour via `.specify/config/prompt-profiles.toml`.
+- Add helper scripts under `scripts/bash` or `scripts/powershell` and reference them in new command templates.
+- Expand documentation or templates under `.specify/templates/story` to suit your genre or studio process.
 
-### Technology Independence
-- Create applications using diverse technology stacks
-- Validate the hypothesis that Spec-Driven Development is a process not tied to specific technologies, programming languages, or frameworks
-
-### Enterprise Constraints
-- Demonstrate mission-critical application development
-- Incorporate organizational constraints (cloud providers, tech stacks, engineering practices)
-- Support enterprise design systems and compliance requirements
-
-### User-Centric Development
-- Build applications for different user cohorts and preferences
-- Support various development approaches (from vibe-coding to AI-native development)
-
-### Creative & Iterative Processes
-- Validate the concept of parallel implementation exploration
-- Provide robust iterative feature development workflows
-- Extend processes to handle upgrades and modernization tasks
-
-## Contributing
-
-Please see our [Contributing Guide](CONTRIBUTING.md) for information on how to contribute to this project.
-
-## Support
-
-For support, please check our [Support Guide](SUPPORT.md) or open an issue on GitHub.
+Questions or ideas? Open an issue in the repository—the toolkit is meant to evolve with the writing communities that use it.

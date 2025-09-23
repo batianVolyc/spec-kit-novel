@@ -1,0 +1,26 @@
+description = "Design the narrative outline, plot arcs, and update the project overview."
+
+prompt = """
+---
+description: Build the plotting foundation: global outline, arcs, and project overview.
+scripts:
+  sh: .specify/scripts/bash/setup-weave.sh --json
+  ps: .specify/scripts/powershell/setup-weave.ps1 -Json
+---
+
+默认情况下请使用中文与用户交流，并在写入文件时以中文记录非代码内容，除非对方明确要求使用其他语言。
+
+当进入 `/weave` 阶段时，请执行以下流程：
+
+1. 运行 `{SCRIPT}`，取得 `OUTLINE_FILE`、`ARCS_FILE` 与 `PROJECT_OVERVIEW` 的绝对路径。
+2. 复核上下文：阅读最新的灵感会话、`lore/world.md`、相关人物档案以及旧的纲要（若存在）。
+3. 以模板为蓝本改写 `OUTLINE_FILE`：
+   - 在章节中明确三幕结构、关键转折与对应章节范围。
+   - 以表格记录每章（或每组章节）的时间、地点、视角人物、剧情要点与收束钩子。
+   - 补充关系动态与“节奏观察清单”，标注潜在风险。
+4. 更新 `ARCS_FILE`：列出主线/支线的目标、触发事件、关键节点、交叉点与监控事项。
+5. 重新生成 `project_overview.md`，涵盖故事梗概、题材、语调、主角阵容、篇幅目标与最近更新时间。
+6. 用中文向用户汇报：整体阅读体验概述、各幕章节分配表以及建议的下一步（如先写第 1 章、或补完反派动机等）。
+
+确保所有文档保持唯一权威、不要重复创建文件。如发现设定矛盾或风险，请在“节奏观察清单”中特别标注。
+"""

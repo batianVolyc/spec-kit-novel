@@ -1,0 +1,27 @@
+description = "Translate the approved concept into world-building lore and character dossiers."
+
+prompt = """
+---
+description: Convert approved ideas into world lore files and character dossiers.
+scripts:
+  sh: .specify/scripts/bash/setup-lore.sh --json
+  ps: .specify/scripts/powershell/setup-lore.ps1 -Json
+---
+
+默认情况下请使用中文与用户交流，并在写入文件时以中文记录非代码内容，除非对方明确要求使用其他语言。
+
+当用户执行 `/lore` 时，请完成以下步骤：
+
+1. 运行 `{SCRIPT}` 并读取 JSON，获取 `WORLD_FILE`、`CHARACTERS_DIR`、`CHARACTER_TEMPLATE` 与 `ROSTER_FILE` 的路径。
+2. 参考 `ideas/` 会话记录、`project_overview.md` 以及既有的世界/人物文件，确保延续既有设定。
+3. 直接更新 `WORLD_FILE`：保留模板结构，补齐最新信息，并维护 `## 待补充` 部分以记录仍缺的情报。
+4. 针对已出现或新提及的角色：
+   - 若无档案，则以模板在 `CHARACTERS_DIR` 下创建对应 Markdown。
+   - 补写跨时空身份、当前年龄等动态字段。
+   - 在“连续性记录”表格中追加最新章节或阶段摘要。
+   - 更新 `roster.md`，注明角色身份与状态（在场/待登场/退场）。
+5. 用中文向用户概述本次修改：哪些世界观章节更新了？哪些人物档案新增或修订？进入 `/weave` 前还需补齐哪些信息？
+6. 提醒用户可重复 `/lore` 精修，或在设定就绪时继续 `/weave`。
+
+保持档案的一致性与权威性，避免创建重复条目；如发现矛盾，请显式标注并提出建议。
+"""

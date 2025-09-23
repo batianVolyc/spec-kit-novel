@@ -1,86 +1,58 @@
 # Installation Guide
 
+Spec Kit · Novel reuses the upstream `specify` CLI but ships a different set of scripts, templates, and prompts tuned for fiction writing. Installation steps match the original toolkit, only the repository URL changes.
+
 ## Prerequisites
 
-- **Linux/macOS** (or Windows; PowerShell scripts now supported without WSL)
-- AI coding agent: [Claude Code](https://www.anthropic.com/claude-code), [GitHub Copilot](https://code.visualstudio.com/), or [Gemini CLI](https://github.com/google-gemini/gemini-cli)
-- [uv](https://docs.astral.sh/uv/) for package management
-- [Python 3.11+](https://www.python.org/downloads/)
+- Python **3.11+**
+- [uv](https://docs.astral.sh/uv/) for installing/running the CLI
 - [Git](https://git-scm.com/downloads)
+- At least one supported AI assistant (Claude Code, Gemini CLI, Cursor, Copilot, Qwen Code, etc.)
 
-## Installation
-
-### Initialize a New Project
-
-The easiest way to get started is to initialize a new project:
+## Install or Run Once
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME>
+# Persistent installation (recommended)
+uv tool install specify-cli --from git+https://github.com/batianVolyc/spec-kit-novel.git
+
+# One-off execution
+uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git specify init <PROJECT_NAME>
 ```
 
-Or initialize in the current directory:
+`specify check` still validates available agents so you can confirm your environment before starting a session.
+
+## Initialising a Project
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init --here
+specify init <PROJECT_NAME>
+# or work in place
+specify init --here
 ```
 
-### Specify AI Agent
+Useful flags:
 
-You can proactively specify your AI agent during initialization:
+| Flag | Purpose |
+| ---- | ------- |
+| `--ai <assistant>` | Pre-selects the AI agent (claude, gemini, copilot, cursor, qwen, opencode, codex, windsurf, kilocode, auggie, roo). |
+| `--script {sh,ps}` | Force Bash or PowerShell automation scripts. Auto-detects from OS otherwise. |
+| `--ignore-agent-tools` | Skip agent detection if you only want the templates. |
+| `--no-git` | Prevents auto-initialising a Git repository. |
+| `--here` / `--force` | Initialise inside the current directory, optionally overwriting existing files. |
 
-```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai claude
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai gemini
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai copilot
-```
+All automation scripts ship in both Bash (`scripts/bash/*.sh`) and PowerShell (`scripts/powershell/*.ps1`) variants. The CLI copies them into your project and `.specify/scripts` so Slash commands can run on any platform.
 
-### Specify Script Type (Shell vs PowerShell)
+## After Initialisation
 
-All automation scripts now have both Bash (`.sh`) and PowerShell (`.ps1`) variants.
+You should see the novel toolkit directories:
+- `ideas/`, `lore/`, `characters/`, `plots/`, `chapters/`, `timelines/`, `logs/adaptations/`
+- `project_overview.md`
+- `.specify/templates/commands` containing `/spark`, `/lore`, `/weave`, `/draft`, `/adapt`
+- `.specify/config/prompt-profiles.toml` for prompt tuning
 
-Auto behavior:
-- Windows default: `ps`
-- Other OS default: `sh`
-- Interactive mode: you'll be prompted unless you pass `--script`
-
-Force a specific script type:
-```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --script sh
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --script ps
-```
-
-### Ignore Agent Tools Check
-
-If you prefer to get the templates without checking for the right tools:
-
-```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai claude --ignore-agent-tools
-```
-
-## Verification
-
-After initialization, you should see the following commands available in your AI agent:
-- `/specify` - Create specifications
-- `/plan` - Generate implementation plans  
-- `/tasks` - Break down into actionable tasks
-
-The `.specify/scripts` directory will contain both `.sh` and `.ps1` scripts.
+From there you can launch your AI agent and start with `/spark`.
 
 ## Troubleshooting
 
-### Git Credential Manager on Linux
-
-If you're having issues with Git authentication on Linux, you can install Git Credential Manager:
-
-```bash
-#!/usr/bin/env bash
-set -e
-echo "Downloading Git Credential Manager v2.6.1..."
-wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb
-echo "Installing Git Credential Manager..."
-sudo dpkg -i gcm-linux_amd64.2.6.1.deb
-echo "Configuring Git to use GCM..."
-git config --global credential.helper manager
-echo "Cleaning up..."
-rm gcm-linux_amd64.2.6.1.deb
-```
+- **Missing scripts/templates** – Re-run `specify init` or copy from `.specify/templates/story` into your workspace.
+- **Permission issues on macOS/Linux** – `specify init` ensures `.sh` files are executable. If you add custom scripts later, run `chmod +x` manually.
+- **Git credential prompts** – Configure your preferred credential helper (e.g. Git Credential Manager) as you would for any Git-backed project.

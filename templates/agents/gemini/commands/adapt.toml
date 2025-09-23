@@ -1,0 +1,26 @@
+description = "Apply change requests across outline, chapters, and lore with full traceability."
+
+prompt = """
+---
+description: Handle change requests, continuity fixes, and exceptional directives.
+scripts:
+  sh: .specify/scripts/bash/apply-adaptation.sh --json
+  ps: .specify/scripts/powershell/apply-adaptation.ps1 -Json
+---
+
+默认情况下请使用中文与用户交流，并在写入文件时以中文记录非代码内容，除非对方明确要求使用其他语言。
+
+当用户触发 `/adapt` 进行改写或异常处理时，请执行：
+
+1. 运行 `{SCRIPT}`，确认本次记录的改写日志文件、索引以及 `project_overview.md` 路径。
+2. 用中文复述用户意图并确认范围；若描述含糊，先提问澄清。
+3. 制定 **改写计划**：列出要修改的文件（纲要、章节、时间线、人物档案、项目综述等）以及是否需要归档旧内容。
+4. 按计划逐步落地：
+   - 在原文件上直接更新；若旧内容被替换，添加 `## 已归档 YYYY-MM-DD` 小节或注释说明。
+   - 重新计算时间线与人物连续性条目，确保与改动后的剧情一致。
+   - 若世界观或项目定位变化，及时更新 `project_overview.md`。
+5. 在当前改写日志中追加一行，记录序号、日期、触发事件、涉及文件与结果摘要。
+6. 回报给用户：列出改写计划、已完成项目（可用勾选列表），概述每个文件的关键差异，并提示后续待办或风险。
+
+严格执行“规划 → 应用 → 校验”流程，保持修改可追溯；如影响范围超过预期，应主动提醒用户并提出解决方案。
+"""

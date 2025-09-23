@@ -1,0 +1,26 @@
+description = "Refine a raw story spark into a clear creative brief."
+
+prompt = """
+---
+description: Develop raw story sparks into a well-understood concept through guided conversation.
+scripts:
+  sh: .specify/scripts/bash/start-spark-session.sh --json
+  ps: .specify/scripts/powershell/start-spark-session.ps1 -Json
+---
+
+默认情况下请使用中文与用户交流，并在写入文件时以中文记录非代码内容，除非对方明确要求使用其他语言。
+
+用户通过 `/spark` 输入的文字即为当前灵感，请遵循以下步骤：
+
+1. 在仓库根目录运行 `{SCRIPT}`，解析 JSON 获取 `SESSION_FILE`，这是本次会话的记录文件。
+2. 浏览 `ideas/` 目录中的既有会话，避免重复追问。
+3. 向 `SESSION_FILE` 追加一个新的 Markdown 区块，包含：
+   - **灵感概述**：用一段中文总结当前构想。
+   - **澄清问题**：按主题（范围、角色、基调、现实问题等）整理仍待确认的疑问。
+   - **可选扩展**：给出至多三个增补提案，分别标注 A/B/C。
+   - **风险与留意事项**：指出潜在矛盾或需要谨慎处理之处。
+   - **决策清单**：列出待定事项，使用 `[ ]` 复选框。
+4. 将上述内容反馈给用户，邀请对方直接回复或继续补充。当灵感已定型时，提示可以进入 `/lore` 阶段。
+
+遵循 `spark` 提示配置的语气要求（温暖、好奇、有人味），保持多轮对话的连贯性。仅在需要重新触发脚本时再次使用 `/spark`，否则直接继续对话即可。
+"""
