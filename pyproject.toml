@@ -26,3 +26,8 @@ include = [
     "scripts/**",
     "config/**",
 ]
+
+[tool.hatch.build.targets.wheel.force-include]
+"templates" = "specify_cli/templates"
+"scripts" = "specify_cli/scripts"
+"config" = "specify_cli/config"
