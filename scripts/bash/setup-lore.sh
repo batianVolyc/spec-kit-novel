@@ -40,7 +40,9 @@ fi
 
 LORE_DIR="$REPO_ROOT/lore"
 CHAR_DIR="$REPO_ROOT/characters"
-mkdir -p "$LORE_DIR" "$CHAR_DIR"
+LOG_DIR="$LORE_DIR/conversation"
+PENDING_DIR="$LORE_DIR/pending"
+mkdir -p "$LORE_DIR" "$CHAR_DIR" "$LOG_DIR" "$PENDING_DIR"
 
 WORLD_FILE="$LORE_DIR/world.md"
 WORLD_TEMPLATE="$REPO_ROOT/.specify/templates/story/world-template.md"
@@ -65,9 +67,34 @@ fi
 
 CHAR_TEMPLATE="$REPO_ROOT/.specify/templates/story/character-template.md"
 
+LOG_FILE="$LOG_DIR/lore-$(date +%Y%m%d).md"
+if [[ ! -f "$LOG_FILE" ]]; then
+    cat <<LOG > "$LOG_FILE"
+# /lore 对话记录 $(date +%Y-%m-%d)
+
+> 记录与 /lore 相关的问答与讨论，未确认内容请同步到待确认清单。
+
+---
+
+LOG
+fi
+
+PENDING_FILE="$PENDING_DIR/todo.md"
+if [[ ! -f "$PENDING_FILE" ]]; then
+    cat <<PENDING > "$PENDING_FILE"
+# /lore 待确认事项
+
+- 将尚未获得作者确认的设定、问题与行动项放在此处。
+- 作者确认后，再移入 `world.md` 等正式档案。
+
+---
+
+PENDING
+fi
+
 if $JSON_MODE; then
-    printf '{"REPO_ROOT":"%s","WORLD_FILE":"%s","CHARACTERS_DIR":"%s","CHARACTER_TEMPLATE":"%s","ROSTER_FILE":"%s"}\n' \
-        "$REPO_ROOT" "$WORLD_FILE" "$CHAR_DIR" "$CHAR_TEMPLATE" "$ROSTER_FILE"
+    printf '{"REPO_ROOT":"%s","WORLD_FILE":"%s","CHARACTERS_DIR":"%s","CHARACTER_TEMPLATE":"%s","ROSTER_FILE":"%s","LOG_FILE":"%s","PENDING_FILE":"%s"}\n' \
+        "$REPO_ROOT" "$WORLD_FILE" "$CHAR_DIR" "$CHAR_TEMPLATE" "$ROSTER_FILE" "$LOG_FILE" "$PENDING_FILE"
 else
     cat <<INFO
 REPO_ROOT: $REPO_ROOT
@@ -75,5 +102,7 @@ WORLD_FILE: $WORLD_FILE
 CHARACTERS_DIR: $CHAR_DIR
 CHARACTER_TEMPLATE: $CHAR_TEMPLATE
 ROSTER_FILE: $ROSTER_FILE
+LOG_FILE: $LOG_FILE
+PENDING_FILE: $PENDING_FILE
 INFO
 fi

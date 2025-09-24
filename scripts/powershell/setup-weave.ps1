@@ -37,7 +37,11 @@ try {
 }
 
 $plotsDir = Join-Path $repoRoot 'plots'
+$conversationDir = Join-Path $plotsDir 'conversation'
+$pendingDir = Join-Path $plotsDir 'pending'
 New-Item -ItemType Directory -Path $plotsDir -Force | Out-Null
+New-Item -ItemType Directory -Path $conversationDir -Force | Out-Null
+New-Item -ItemType Directory -Path $pendingDir -Force | Out-Null
 
 $outlineFile = Join-Path $plotsDir 'outline.md'
 $outlineTemplate = Join-Path $repoRoot '.specify/templates/story/outline-template.md'
@@ -71,6 +75,31 @@ if (-not (Test-Path $overviewFile)) {
     }
 }
 
+$logFile = Join-Path $conversationDir ("weave-" + (Get-Date -Format 'yyyyMMdd') + '.md')
+if (-not (Test-Path $logFile)) {
+    @(
+        "# /weave 对话记录 $(Get-Date -Format 'yyyy-MM-dd')",
+        '',
+        '> 集中记录与 /weave 相关的讨论，待确认决策请同步到 pending 清单。',
+        '',
+        '---',
+        ''
+    ) | Set-Content -Path $logFile
+}
+
+$pendingFile = Join-Path $pendingDir 'todo.md'
+if (-not (Test-Path $pendingFile)) {
+    @(
+        '# /weave 待确认事项',
+        '',
+        '- 汇总尚未确认的结构调整、篇章安排与节奏建议。',
+        '- 作者确认后，再写入 `outline.md`、`arcs.md` 等正式文档。',
+        '',
+        '---',
+        ''
+    ) | Set-Content -Path $pendingFile
+}
+
 if ($Json) {
     [pscustomobject]@{
         REPO_ROOT = $repoRoot
@@ -78,6 +107,8 @@ if ($Json) {
         OUTLINE_FILE = $outlineFile
         ARCS_FILE = $arcsFile
         PROJECT_OVERVIEW = $overviewFile
+        LOG_FILE = $logFile
+        PENDING_FILE = $pendingFile
     } | ConvertTo-Json -Compress
 } else {
     Write-Output "REPO_ROOT: $repoRoot"
@@ -85,4 +116,6 @@ if ($Json) {
     Write-Output "OUTLINE_FILE: $outlineFile"
     Write-Output "ARCS_FILE: $arcsFile"
     Write-Output "PROJECT_OVERVIEW: $overviewFile"
+    Write-Output "LOG_FILE: $logFile"
+    Write-Output "PENDING_FILE: $pendingFile"
 }

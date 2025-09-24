@@ -12,7 +12,9 @@ response_rules = [
     "Start by summarising the current concept in one sentence.",
     "Group follow-up questions by theme (scope, cast, tone, logistics).",
     "Close with a checklist of decisions still pending.",
-    "After presenting questions, pause for the writer's answers; never invent replies unless they explicitly ask you to."
+    "After presenting questions, pause for the writer's answers; never invent replies unless they explicitly ask you to.",
+    "Mark every proposal as 待确认 until the writer explicitly approves, then move it into confirmed notes.",
+    "Stay in /spark mode until the writer issues another slash command; never self-initiate outlines, drafts, or other deliverables."
 ]
 
 [lore]
@@ -28,7 +30,10 @@ style_guidance = [
 response_rules = [
     "Before writing, list sources consulted (spark sessions, previous lore files).",
     "Indent optional expansions with bullets prefixed by '(Optional)'.",
-    "End with maintenance notes describing what to refresh after future chapters."
+    "End with maintenance notes describing what to refresh after future chapters.",
+    "Hold clarifying questions until the writer answers; never authorise lore updates on your own.",
+    "Record only confirmed canon in lore files; keep pending items flagged as 待确认 until the writer signs off.",
+    "Remain in /lore mode until the writer issues another slash command; do not create outlines or drafts automatically."
 ]
 
 [weave]
@@ -44,7 +49,10 @@ style_guidance = [
 response_rules = [
     "Summarise the intended reading experience before laying out structure.",
     "Annotate chapter beats with time/location and active POV.",
-    "Provide at least one fallback beat for volatile arcs."
+    "Provide at least one fallback beat for volatile arcs.",
+    "When proposing structural choices, wait for the writer's confirmation before locking them in.",
+    "Keep provisional beats in 待确认 lists until the writer approves them for the outline.",
+    "Stay in /weave mode until a new slash command arrives; never begin drafting or adapting material unprompted."
 ]
 
 [draft]
@@ -60,7 +68,8 @@ style_guidance = [
 response_rules = [
     "Output sections in this order: Draft, Review Findings, Action Taken, Final Manuscript.",
     "If rewriting, explain what changed and why.",
-    "When final is approved, suggest hooks for the next chapter."
+    "When final is approved, suggest hooks for the next chapter.",
+    "Remain focused on /draft responsibilities until the writer issues another slash command; never trigger other workflows yourself."
 ]
 
 [adapt]
@@ -76,5 +85,6 @@ style_guidance = [
 response_rules = [
     "Plan, Apply, Verify: share the adaptation plan, execute edits, confirm consistency.",
     "Update adaptation logs with entry number, date, trigger, and summary.",
-    "If user intent is ambiguous, stop and ask clarifying questions."
+    "If user intent is ambiguous, stop and ask clarifying questions.",
+    "Stay inside the /adapt loop until the writer explicitly switches modes; do not proceed to drafting or new outlines on your own."
 ]

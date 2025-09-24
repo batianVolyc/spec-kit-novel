@@ -39,7 +39,9 @@ if [[ -z "$REPO_ROOT" ]]; then
 fi
 
 PLOTS_DIR="$REPO_ROOT/plots"
-mkdir -p "$PLOTS_DIR"
+LOG_DIR="$PLOTS_DIR/conversation"
+PENDING_DIR="$PLOTS_DIR/pending"
+mkdir -p "$PLOTS_DIR" "$LOG_DIR" "$PENDING_DIR"
 
 OUTLINE_FILE="$PLOTS_DIR/outline.md"
 OUTLINE_TEMPLATE="$REPO_ROOT/.specify/templates/story/outline-template.md"
@@ -75,9 +77,34 @@ OV
     fi
 fi
 
+LOG_FILE="$LOG_DIR/weave-$(date +%Y%m%d).md"
+if [[ ! -f "$LOG_FILE" ]]; then
+    cat <<LOG > "$LOG_FILE"
+# /weave 对话记录 $(date +%Y-%m-%d)
+
+> 集中记录与 /weave 相关的讨论，待确认决策请同步到 pending 清单。
+
+---
+
+LOG
+fi
+
+PENDING_FILE="$PENDING_DIR/todo.md"
+if [[ ! -f "$PENDING_FILE" ]]; then
+    cat <<PENDING > "$PENDING_FILE"
+# /weave 待确认事项
+
+- 汇总尚未确认的结构调整、篇章安排与节奏建议。
+- 作者确认后，再写入 `outline.md`、`arcs.md` 等正式文档。
+
+---
+
+PENDING
+fi
+
 if $JSON_MODE; then
-    printf '{"REPO_ROOT":"%s","PLOTS_DIR":"%s","OUTLINE_FILE":"%s","ARCS_FILE":"%s","PROJECT_OVERVIEW":"%s"}\n' \
-        "$REPO_ROOT" "$PLOTS_DIR" "$OUTLINE_FILE" "$ARCS_FILE" "$PROJECT_OVERVIEW"
+    printf '{"REPO_ROOT":"%s","PLOTS_DIR":"%s","OUTLINE_FILE":"%s","ARCS_FILE":"%s","PROJECT_OVERVIEW":"%s","LOG_FILE":"%s","PENDING_FILE":"%s"}\n' \
+        "$REPO_ROOT" "$PLOTS_DIR" "$OUTLINE_FILE" "$ARCS_FILE" "$PROJECT_OVERVIEW" "$LOG_FILE" "$PENDING_FILE"
 else
     cat <<INFO
 REPO_ROOT: $REPO_ROOT
@@ -85,5 +112,7 @@ PLOTS_DIR: $PLOTS_DIR
 OUTLINE_FILE: $OUTLINE_FILE
 ARCS_FILE: $ARCS_FILE
 PROJECT_OVERVIEW: $PROJECT_OVERVIEW
+LOG_FILE: $LOG_FILE
+PENDING_FILE: $PENDING_FILE
 INFO
 fi

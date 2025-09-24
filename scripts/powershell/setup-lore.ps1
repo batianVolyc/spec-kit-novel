@@ -38,8 +38,12 @@ try {
 
 $loreDir = Join-Path $repoRoot 'lore'
 $charactersDir = Join-Path $repoRoot 'characters'
+$conversationDir = Join-Path $loreDir 'conversation'
+$pendingDir = Join-Path $loreDir 'pending'
 New-Item -ItemType Directory -Path $loreDir -Force | Out-Null
 New-Item -ItemType Directory -Path $charactersDir -Force | Out-Null
+New-Item -ItemType Directory -Path $conversationDir -Force | Out-Null
+New-Item -ItemType Directory -Path $pendingDir -Force | Out-Null
 
 $worldFile = Join-Path $loreDir 'world.md'
 $worldTemplate = Join-Path $repoRoot '.specify/templates/story/world-template.md'
@@ -65,6 +69,31 @@ if (-not (Test-Path $rosterFile)) {
 
 $charTemplate = Join-Path $repoRoot '.specify/templates/story/character-template.md'
 
+$logFile = Join-Path $conversationDir ("lore-" + (Get-Date -Format 'yyyyMMdd') + '.md')
+if (-not (Test-Path $logFile)) {
+    @(
+        "# /lore 对话记录 $(Get-Date -Format 'yyyy-MM-dd')",
+        '',
+        '> 记录与 /lore 相关的问答与讨论，未确认内容请同步到待确认清单。',
+        '',
+        '---',
+        ''
+    ) | Set-Content -Path $logFile
+}
+
+$pendingFile = Join-Path $pendingDir 'todo.md'
+if (-not (Test-Path $pendingFile)) {
+    @(
+        '# /lore 待确认事项',
+        '',
+        '- 将尚未获得作者确认的设定、问题与行动项放在此处。',
+        '- 作者确认后，再移入 `world.md` 等正式档案。',
+        '',
+        '---',
+        ''
+    ) | Set-Content -Path $pendingFile
+}
+
 if ($Json) {
     [pscustomobject]@{
         REPO_ROOT = $repoRoot
@@ -72,6 +101,8 @@ if ($Json) {
         CHARACTERS_DIR = $charactersDir
         CHARACTER_TEMPLATE = $charTemplate
         ROSTER_FILE = $rosterFile
+        LOG_FILE = $logFile
+        PENDING_FILE = $pendingFile
     } | ConvertTo-Json -Compress
 } else {
     Write-Output "REPO_ROOT: $repoRoot"
@@ -79,4 +110,6 @@ if ($Json) {
     Write-Output "CHARACTERS_DIR: $charactersDir"
     Write-Output "CHARACTER_TEMPLATE: $charTemplate"
     Write-Output "ROSTER_FILE: $rosterFile"
+    Write-Output "LOG_FILE: $logFile"
+    Write-Output "PENDING_FILE: $pendingFile"
 }

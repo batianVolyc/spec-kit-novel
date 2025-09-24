@@ -51,6 +51,9 @@ fi
 
 IDEA_DIR="$REPO_ROOT/ideas"
 mkdir -p "$IDEA_DIR"
+LOG_DIR="$IDEA_DIR/conversation"
+PENDING_DIR="$IDEA_DIR/pending"
+mkdir -p "$LOG_DIR" "$PENDING_DIR"
 
 SESSION_FILE=""
 REUSED="false"
@@ -100,11 +103,41 @@ HEADER
 fi
 
 export NOVEL_IDEA_SESSION="$SESSION_FILE"
+SESSION_NAME="$(basename "${SESSION_FILE}" .md)"
+SESSION_LOG="$LOG_DIR/${SESSION_NAME}-conversation.md"
+SESSION_PENDING="$PENDING_DIR/${SESSION_NAME}-pending.md"
+
+export NOVEL_IDEA_SESSION_LOG="$SESSION_LOG"
+export NOVEL_IDEA_SESSION_PENDING="$SESSION_PENDING"
+
+if [[ ! -f "$SESSION_LOG" ]]; then
+    session_label="$(date +%Y-%m-%d)"
+    cat <<LOG > "$SESSION_LOG"
+# /spark 对话记录 $session_label
+
+> 仅记录用户与 /spark 之间的往返对话。未获确认的意见和问题留在待确认清单中。
+
+---
+
+LOG
+fi
+
+if [[ ! -f "$SESSION_PENDING" ]]; then
+    cat <<PENDING > "$SESSION_PENDING"
+# /spark 待确认事项
+
+- 记录所有尚未得到作者确认的提案、问题与待办。
+- 一旦作者确认，将条目移动到正式会话文件。
+
+---
+
+PENDING
+fi
 
 if [[ "$JSON_MODE" == "true" ]]; then
     reuse_flag=$([[ "$REUSED" == "true" ]] && echo true || echo false)
-    printf '{"REPO_ROOT":"%s","IDEA_DIR":"%s","SESSION_FILE":"%s","REUSED":%s}\n' \
-        "$REPO_ROOT" "$IDEA_DIR" "$SESSION_FILE" "$reuse_flag"
+    printf '{"REPO_ROOT":"%s","IDEA_DIR":"%s","SESSION_FILE":"%s","SESSION_LOG":"%s","SESSION_PENDING":"%s","REUSED":%s}\n' \
+        "$REPO_ROOT" "$IDEA_DIR" "$SESSION_FILE" "$SESSION_LOG" "$SESSION_PENDING" "$reuse_flag"
 else
     echo "REPO_ROOT: $REPO_ROOT"
     echo "IDEA_DIR: $IDEA_DIR"
@@ -113,4 +146,6 @@ else
     else
         echo "SESSION_FILE: $SESSION_FILE"
     fi
+    echo "SESSION_LOG: $SESSION_LOG"
+    echo "SESSION_PENDING: $SESSION_PENDING"
 fi

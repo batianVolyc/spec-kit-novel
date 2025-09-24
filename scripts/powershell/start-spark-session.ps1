@@ -38,7 +38,11 @@ try {
 }
 
 $ideasDir = Join-Path $repoRoot 'ideas'
+$conversationDir = Join-Path $ideasDir 'conversation'
+$pendingDir = Join-Path $ideasDir 'pending'
 New-Item -ItemType Directory -Path $ideasDir -Force | Out-Null
+New-Item -ItemType Directory -Path $conversationDir -Force | Out-Null
+New-Item -ItemType Directory -Path $pendingDir -Force | Out-Null
 
 $sessionFile = $null
 $reused = $false
@@ -90,13 +94,45 @@ if (-not $sessionFile) {
     }
 }
 
+$sessionName = [System.IO.Path]::GetFileNameWithoutExtension($sessionFile)
+$sessionLog = Join-Path $conversationDir "${sessionName}-conversation.md"
+$sessionPending = Join-Path $pendingDir "${sessionName}-pending.md"
+
 $env:NOVEL_IDEA_SESSION = $sessionFile
+$env:NOVEL_IDEA_SESSION_LOG = $sessionLog
+$env:NOVEL_IDEA_SESSION_PENDING = $sessionPending
+
+if (-not (Test-Path $sessionLog)) {
+    $label = Get-Date -Format 'yyyy-MM-dd'
+    @(
+        "# /spark 对话记录 $label",
+        '',
+        '> 仅记录用户与 /spark 之间的往返对话。未获确认的意见和问题留在待确认清单中。',
+        '',
+        '---',
+        ''
+    ) | Set-Content -Path $sessionLog
+}
+
+if (-not (Test-Path $sessionPending)) {
+    @(
+        '# /spark 待确认事项',
+        '',
+        '- 记录所有尚未得到作者确认的提案、问题与待办。',
+        '- 一旦作者确认，将条目移动到正式会话文件。',
+        '',
+        '---',
+        ''
+    ) | Set-Content -Path $sessionPending
+}
 
 if ($Json) {
     [pscustomobject]@{
         REPO_ROOT = $repoRoot
         IDEA_DIR = $ideasDir
         SESSION_FILE = $sessionFile
+        SESSION_LOG = $sessionLog
+        SESSION_PENDING = $sessionPending
         REUSED = $reused
     } | ConvertTo-Json -Compress
 } else {
@@ -107,4 +143,6 @@ if ($Json) {
     } else {
         Write-Output "SESSION_FILE: $sessionFile"
     }
+    Write-Output "SESSION_LOG: $sessionLog"
+    Write-Output "SESSION_PENDING: $sessionPending"
 }
