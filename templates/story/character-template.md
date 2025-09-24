@@ -44,3 +44,6 @@
 | 章节 | 情境 | 变化 |
 | ---- | ---- | ---- |
 | [CHAPTER_REF] | [EVENT_SUMMARY] | [IMPACT_ON_CHARACTER] |
+
+## 决策索引
+- (引用 LOG#[ID]) [确认内容概述]

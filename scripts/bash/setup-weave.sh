@@ -44,9 +44,17 @@ PENDING_DIR="$PLOTS_DIR/pending"
 mkdir -p "$PLOTS_DIR" "$LOG_DIR" "$PENDING_DIR"
 
 OUTLINE_FILE="$PLOTS_DIR/outline.md"
-OUTLINE_TEMPLATE="$REPO_ROOT/.specify/templates/story/outline-template.md"
+OUTLINE_TEMPLATE=""
+for candidate in \
+    "$REPO_ROOT/.specify/templates/story/outline-template.md" \
+    "$REPO_ROOT/templates/story/outline-template.md"; do
+    if [[ -f "$candidate" ]]; then
+        OUTLINE_TEMPLATE="$candidate"
+        break
+    fi
+done
 if [[ ! -f "$OUTLINE_FILE" ]]; then
-    if [[ -f "$OUTLINE_TEMPLATE" ]]; then
+    if [[ -n "$OUTLINE_TEMPLATE" ]]; then
         sed "s/\[TITLE\]/TODO Title/" "$OUTLINE_TEMPLATE" > "$OUTLINE_FILE"
     else
         echo "# Story Outline" > "$OUTLINE_FILE"
@@ -54,9 +62,17 @@ if [[ ! -f "$OUTLINE_FILE" ]]; then
 fi
 
 ARCS_FILE="$PLOTS_DIR/arcs.md"
-ARCS_TEMPLATE="$REPO_ROOT/.specify/templates/story/arc-template.md"
+ARCS_TEMPLATE=""
+for candidate in \
+    "$REPO_ROOT/.specify/templates/story/arc-template.md" \
+    "$REPO_ROOT/templates/story/arc-template.md"; do
+    if [[ -f "$candidate" ]]; then
+        ARCS_TEMPLATE="$candidate"
+        break
+    fi
+done
 if [[ ! -f "$ARCS_FILE" ]]; then
-    if [[ -f "$ARCS_TEMPLATE" ]]; then
+    if [[ -n "$ARCS_TEMPLATE" ]] ; then
         sed "s/ARC-1/ARC-1/" "$ARCS_TEMPLATE" > "$ARCS_FILE"
     else
         echo "# Plot Arcs" > "$ARCS_FILE"
@@ -64,9 +80,17 @@ if [[ ! -f "$ARCS_FILE" ]]; then
 fi
 
 PROJECT_OVERVIEW="$REPO_ROOT/project_overview.md"
-PROJECT_TEMPLATE="$REPO_ROOT/.specify/templates/story/project-overview-template.md"
+PROJECT_TEMPLATE=""
+for candidate in \
+    "$REPO_ROOT/.specify/templates/story/project-overview-template.md" \
+    "$REPO_ROOT/templates/story/project-overview-template.md"; do
+    if [[ -f "$candidate" ]]; then
+        PROJECT_TEMPLATE="$candidate"
+        break
+    fi
+done
 if [[ ! -f "$PROJECT_OVERVIEW" ]]; then
-    if [[ -f "$PROJECT_TEMPLATE" ]]; then
+    if [[ -n "$PROJECT_TEMPLATE" ]]; then
         sed "s/\[TITLE\]/TODO Title/" "$PROJECT_TEMPLATE" > "$PROJECT_OVERVIEW"
     else
         cat <<OV > "$PROJECT_OVERVIEW"
@@ -82,7 +106,11 @@ if [[ ! -f "$LOG_FILE" ]]; then
     cat <<LOG > "$LOG_FILE"
 # /weave 对话记录 $(date +%Y-%m-%d)
 
-> 集中记录与 /weave 相关的讨论，待确认决策请同步到 pending 清单。
+> 记录与 /weave 相关的讨论。每条发言请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题继续编号，正文保持原话，可在行尾添加标签。待确认决策请同步到 pending 清单。
+
+#### [LOG#$(date +%Y%m%d)-01] 系统
+
+欢迎使用 `/weave`，请沿用以上格式写入新的对话记录。
 
 ---
 
@@ -94,7 +122,7 @@ if [[ ! -f "$PENDING_FILE" ]]; then
     cat <<PENDING > "$PENDING_FILE"
 # /weave 待确认事项
 
-- 汇总尚未确认的结构调整、篇章安排与节奏建议。
+- 汇总尚未确认的结构调整、篇章安排与节奏建议，并标注来源 `LOG#`。
 - 作者确认后，再写入 `outline.md`、`arcs.md` 等正式文档。
 
 ---

@@ -44,9 +44,12 @@ New-Item -ItemType Directory -Path $conversationDir -Force | Out-Null
 New-Item -ItemType Directory -Path $pendingDir -Force | Out-Null
 
 $outlineFile = Join-Path $plotsDir 'outline.md'
-$outlineTemplate = Join-Path $repoRoot '.specify/templates/story/outline-template.md'
+$outlineTemplate = @(
+    (Join-Path $repoRoot '.specify/templates/story/outline-template.md'),
+    (Join-Path $repoRoot 'templates/story/outline-template.md')
+) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not (Test-Path $outlineFile)) {
-    if (Test-Path $outlineTemplate) {
+    if ($outlineTemplate) {
         (Get-Content $outlineTemplate) -replace '\[TITLE\]', 'TODO Title' | Set-Content -Path $outlineFile -NoNewline
         Add-Content -Path $outlineFile -Value ""
     } else {
@@ -55,9 +58,12 @@ if (-not (Test-Path $outlineFile)) {
 }
 
 $arcsFile = Join-Path $plotsDir 'arcs.md'
-$arcsTemplate = Join-Path $repoRoot '.specify/templates/story/arc-template.md'
+$arcsTemplate = @(
+    (Join-Path $repoRoot '.specify/templates/story/arc-template.md'),
+    (Join-Path $repoRoot 'templates/story/arc-template.md')
+) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not (Test-Path $arcsFile)) {
-    if (Test-Path $arcsTemplate) {
+    if ($arcsTemplate) {
         Get-Content $arcsTemplate | Set-Content -Path $arcsFile
     } else {
         '# Plot Arcs' | Set-Content -Path $arcsFile
@@ -65,9 +71,12 @@ if (-not (Test-Path $arcsFile)) {
 }
 
 $overviewFile = Join-Path $repoRoot 'project_overview.md'
-$overviewTemplate = Join-Path $repoRoot '.specify/templates/story/project-overview-template.md'
+$overviewTemplate = @(
+    (Join-Path $repoRoot '.specify/templates/story/project-overview-template.md'),
+    (Join-Path $repoRoot 'templates/story/project-overview-template.md')
+) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not (Test-Path $overviewFile)) {
-    if (Test-Path $overviewTemplate) {
+    if ($overviewTemplate) {
         (Get-Content $overviewTemplate) -replace '\[TITLE\]', 'TODO Title' | Set-Content -Path $overviewFile -NoNewline
         Add-Content -Path $overviewFile -Value ""
     } else {
@@ -80,7 +89,11 @@ if (-not (Test-Path $logFile)) {
     @(
         "# /weave 对话记录 $(Get-Date -Format 'yyyy-MM-dd')",
         '',
-        '> 集中记录与 /weave 相关的讨论，待确认决策请同步到 pending 清单。',
+        '> 记录与 /weave 相关的讨论。每条发言请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题继续编号，正文保持原话，可在行尾添加标签。待确认决策请同步到 pending 清单。',
+        '',
+        "#### [LOG#$(Get-Date -Format 'yyyyMMdd')-01] 系统",
+        '',
+        '欢迎使用 `/weave`，请沿用以上格式写入新的对话记录。',
         '',
         '---',
         ''
@@ -92,7 +105,7 @@ if (-not (Test-Path $pendingFile)) {
     @(
         '# /weave 待确认事项',
         '',
-        '- 汇总尚未确认的结构调整、篇章安排与节奏建议。',
+        '- 汇总尚未确认的结构调整、篇章安排与节奏建议，并标注来源 `LOG#`。',
         '- 作者确认后，再写入 `outline.md`、`arcs.md` 等正式文档。',
         '',
         '---',

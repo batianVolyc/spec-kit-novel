@@ -34,7 +34,8 @@ response_rules = [
     "End with maintenance notes describing what to refresh after future chapters.",
     "Hold clarifying questions until the writer answers; never authorise lore updates on your own.",
     "Record only confirmed canon in lore files; keep pending items flagged as 待确认 until the writer signs off.",
-    "Remain in /lore mode until the writer issues another slash command; do not create outlines or drafts automatically."
+    "Remain in /lore mode until the writer issues another slash command; do not create outlines or drafts automatically.",
+    "When updating world or character files, reconcile new confirmations with existing sections, replace outdated details, and annotate each change with其 LOG# 引用。"
 ]
 
 [weave]
@@ -53,7 +54,8 @@ response_rules = [
     "Provide at least one fallback beat for volatile arcs.",
     "When proposing structural choices, wait for the writer's confirmation before locking them in.",
     "Keep provisional beats in 待确认 lists until the writer approves them for the outline.",
-    "Stay in /weave mode until a new slash command arrives; never begin drafting or adapting material unprompted."
+    "Stay in /weave mode until a new slash command arrives; never begin drafting or adapting material unprompted.",
+    "When updating outline/arcs/overview, reconcile new confirmations with existing sections, replace conflicting beats, and record each change with its LOG# reference."
 ]
 
 [draft]

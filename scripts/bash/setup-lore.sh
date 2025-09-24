@@ -45,13 +45,68 @@ PENDING_DIR="$LORE_DIR/pending"
 mkdir -p "$LORE_DIR" "$CHAR_DIR" "$LOG_DIR" "$PENDING_DIR"
 
 WORLD_FILE="$LORE_DIR/world.md"
-WORLD_TEMPLATE="$REPO_ROOT/.specify/templates/story/world-template.md"
+WORLD_TEMPLATE=""
+for candidate in \
+    "$REPO_ROOT/.specify/templates/story/world-template.md" \
+    "$REPO_ROOT/templates/story/world-template.md"; do
+    if [[ -f "$candidate" ]]; then
+        WORLD_TEMPLATE="$candidate"
+        break
+    fi
+done
 if [[ ! -f "$WORLD_FILE" ]]; then
-    if [[ -f "$WORLD_TEMPLATE" ]]; then
+    if [[ -n "$WORLD_TEMPLATE" ]]; then
         sed "s/\[TITLE\]/TODO Title/" "$WORLD_TEMPLATE" > "$WORLD_FILE"
     else
-        echo "# World Overview" > "$WORLD_FILE"
-        echo "(fill in after /lore)" >> "$WORLD_FILE"
+        cat <<'WORLD_FALLBACK' > "$WORLD_FILE"
+# 世界设定概览
+
+**故事标题**： TODO Title
+**题材风格**： 
+**主要时代 / 地点**： 
+**超自然或科技设定**： 
+
+## 核心支柱
+- **主题焦点**： 
+- **情绪氛围**： 
+- **冲突核心**： 
+
+## 地理与社会结构
+| 项目 | 说明 |
+| ---- | ---- |
+| 中心城市 / 关键地点 | 
+| 地理区域与地标 | 
+| 社会阶层与权力分配 | 
+| 技术或文化发展水平 | 
+| 经济与贸易特点 | 
+
+## 能力体系与限制
+- **能力 / 技艺**： 
+- **限制与代价**： 
+- **规训与禁忌**： 
+
+## 历史脉络
+1. **近期事件** —— 
+2. **隐秘真相** —— 
+3. **紧张热点** —— 
+
+## 文化风貌
+- **礼俗与仪式**： 
+- **语言与表达**： 
+- **日常生活与饮食**： 
+- **信仰体系**： 
+
+## 故事钩子
+- **开端契机**： 
+- **前期筹码**： 
+- **后续升级路径**： 
+
+## 待补充问题
+- 
+
+## 决策索引
+- (引用 LOG#) 
+WORLD_FALLBACK
     fi
 fi
 
@@ -65,14 +120,26 @@ if [[ ! -f "$ROSTER_FILE" ]]; then
 ROSTER
 fi
 
-CHAR_TEMPLATE="$REPO_ROOT/.specify/templates/story/character-template.md"
+CHAR_TEMPLATE=""
+for candidate in \
+    "$REPO_ROOT/.specify/templates/story/character-template.md" \
+    "$REPO_ROOT/templates/story/character-template.md"; do
+    if [[ -f "$candidate" ]]; then
+        CHAR_TEMPLATE="$candidate"
+        break
+    fi
+done
 
 LOG_FILE="$LOG_DIR/lore-$(date +%Y%m%d).md"
 if [[ ! -f "$LOG_FILE" ]]; then
     cat <<LOG > "$LOG_FILE"
 # /lore 对话记录 $(date +%Y-%m-%d)
 
-> 记录与 /lore 相关的问答与讨论，未确认内容请同步到待确认清单。
+> 记录与 /lore 相关的往返内容。每条发言请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题继续编号，正文保持原话，可在行尾添加标签。
+
+#### [LOG#$(date +%Y%m%d)-01] 系统
+
+欢迎使用 `/lore`，请沿用以上格式写入新的对话记录。
 
 ---
 
@@ -84,8 +151,8 @@ if [[ ! -f "$PENDING_FILE" ]]; then
     cat <<PENDING > "$PENDING_FILE"
 # /lore 待确认事项
 
-- 将尚未获得作者确认的设定、问题与行动项放在此处。
-- 作者确认后，再移入 `world.md` 等正式档案。
+- 收录尚未获得作者确认的设定、问题与行动项，并标注来源 `LOG#`。
+- 在写入世界观或角色档案前，请再次与作者确认并勾选完成。
 
 ---
 

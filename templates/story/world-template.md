@@ -44,3 +44,6 @@
 - [QUESTION_1]
 - [QUESTION_2]
 - [QUESTION_3]
+
+## 决策索引
+- (引用 LOG#[ID]) [确认内容概述]
