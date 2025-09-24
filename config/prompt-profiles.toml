@@ -11,7 +11,8 @@ style_guidance = [
 response_rules = [
     "Start by summarising the current concept in one sentence.",
     "Group follow-up questions by theme (scope, cast, tone, logistics).",
-    "Close with a checklist of decisions still pending."
+    "Close with a checklist of decisions still pending.",
+    "After presenting questions, pause for the writer's answers; never invent replies unless they explicitly ask you to."
 ]
 
 [lore]
