@@ -72,24 +72,36 @@ if (-not $sessionFile) {
         exit 1
     }
 
-    $template = Join-Path $repoRoot '.specify/templates/story/idea-session-template.md'
-    if (Test-Path $template) {
+    $templateCandidates = @(
+        (Join-Path $repoRoot '.specify/templates/story/idea-session-template.md'),
+        (Join-Path $repoRoot 'templates/story/idea-session-template.md')
+    )
+    $template = $templateCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+
+    if ($template) {
         (Get-Content $template) -replace '\[DATE\]', (Get-Date -Format 'yyyy-MM-dd') | Set-Content -Path $sessionFile -NoNewline
         Add-Content -Path $sessionFile -Value ""
     } else {
         @(
-            "# Idea Session $(Get-Date -Format 'yyyy-MM-dd')",
+            "# 创意基石 $(Get-Date -Format 'yyyy-MM-dd')",
             '',
-            '## Initial Spark',
-            '> ',
+            '### 创意概览',
+            '- ',
             '',
-            '## Clarifying Questions',
+            '### 人物设定',
+            '- ',
             '',
-            '## Notes from Discussion',
+            '### 世界与规则',
+            '- ',
             '',
-            '## Candidate Enhancements',
+            '### 故事情节（已确认）',
+            '- ',
             '',
-            '## Decisions and Next Steps'
+            '### 风险与待决',
+            '- ',
+            '',
+            '## 决策索引',
+            "- (引用 LOG#$(Get-Date -Format 'yyyyMMdd')-01) 初始化"
         ) | Set-Content -Path $sessionFile
     }
 }
@@ -107,7 +119,11 @@ if (-not (Test-Path $sessionLog)) {
     @(
         "# /spark 对话记录 $label",
         '',
-        '> 仅记录用户与 /spark 之间的往返对话。未获确认的意见和问题留在待确认清单中。',
+        '> 仅记录用户与 /spark 之间的往返对话。请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题记录每条发言，XX 递增；正文保持原话，便于引用。',
+        '',
+        "#### [LOG#$(Get-Date -Format 'yyyyMMdd')-01] 系统",
+        '',
+        '欢迎使用 `/spark`，请按照上述格式继续记录。',
         '',
         '---',
         ''
@@ -118,8 +134,8 @@ if (-not (Test-Path $sessionPending)) {
     @(
         '# /spark 待确认事项',
         '',
-        '- 记录所有尚未得到作者确认的提案、问题与待办。',
-        '- 一旦作者确认，将条目移动到正式会话文件。',
+        '- 记录所有尚未得到作者确认的提案、问题与待办，并标注来源 `LOG#`。',
+        '- 勾选或移动至创意基石前，请再次向作者确认。',
         '',
         '---',
         ''

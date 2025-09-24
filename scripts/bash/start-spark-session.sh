@@ -81,23 +81,39 @@ if [[ -z "$SESSION_FILE" ]]; then
         fi
     done
 
-    TEMPLATE="$REPO_ROOT/.specify/templates/story/idea-session-template.md"
-    if [[ -f "$TEMPLATE" ]]; then
+    TEMPLATE=""
+    for candidate in \
+        "$REPO_ROOT/.specify/templates/story/idea-session-template.md" \
+        "$REPO_ROOT/templates/story/idea-session-template.md"; do
+        if [[ -f "$candidate" ]]; then
+            TEMPLATE="$candidate"
+            break
+        fi
+    done
+
+    if [[ -n "$TEMPLATE" ]]; then
         sed "s/\[DATE\]/$(date +%Y-%m-%d)/" "$TEMPLATE" > "$SESSION_FILE"
     else
         cat <<HEADER > "$SESSION_FILE"
-# Idea Session $(date +%Y-%m-%d)
+# 创意基石 $(date +%Y-%m-%d)
 
-## Initial Spark
-> 
+### 创意概览
+- 
 
-## Clarifying Questions
+### 人物设定
+- 
 
-## Notes from Discussion
+### 世界与规则
+- 
 
-## Candidate Enhancements
+### 故事情节（已确认）
+- 
 
-## Decisions and Next Steps
+### 风险与待决
+- 
+
+## 决策索引
+- (引用 LOG#$(date +%Y%m%d)-01) 初始化
 HEADER
     fi
 fi
@@ -115,7 +131,11 @@ if [[ ! -f "$SESSION_LOG" ]]; then
     cat <<LOG > "$SESSION_LOG"
 # /spark 对话记录 $session_label
 
-> 仅记录用户与 /spark 之间的往返对话。未获确认的意见和问题留在待确认清单中。
+> 仅记录用户与 /spark 之间的往返对话。请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题记录每条发言，XX 递增；正文保持原话，便于引用。
+
+#### [LOG#$(date +%Y%m%d)-01] 系统
+
+欢迎使用 `/spark`，请按照上述格式继续记录。
 
 ---
 
@@ -126,8 +146,8 @@ if [[ ! -f "$SESSION_PENDING" ]]; then
     cat <<PENDING > "$SESSION_PENDING"
 # /spark 待确认事项
 
-- 记录所有尚未得到作者确认的提案、问题与待办。
-- 一旦作者确认，将条目移动到正式会话文件。
+- 记录所有尚未得到作者确认的提案、问题与待办，并标注来源 `LOG#`。
+- 勾选或移动至创意基石前，请再次向作者确认。
 
 ---
 

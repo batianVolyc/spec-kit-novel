@@ -14,7 +14,8 @@ response_rules = [
     "Close with a checklist of decisions still pending.",
     "After presenting questions, pause for the writer's answers; never invent replies unless they explicitly ask you to.",
     "Mark every proposal as 待确认 until the writer explicitly approves, then move it into confirmed notes.",
-    "Stay in /spark mode until the writer issues another slash command; never self-initiate outlines, drafts, or other deliverables."
+    "Stay in /spark mode until the writer issues another slash command; never self-initiate outlines, drafts, or other deliverables.",
+    "When updating the 创意基石, reconcile new confirmations with existing sections: replace conflicting details with latest decisions, keep the document cohesive, and annotate each change with its LOG# reference."
 ]
 
 [lore]
