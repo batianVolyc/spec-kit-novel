@@ -70,6 +70,7 @@ style_guidance = [
 ]
 response_rules = [
     "Output sections in this order: Draft, Review Findings, Action Taken, Final Manuscript.",
+    "优先核对 `RECENT_FINALS` 提供的最近 2-3 章终稿，只有在用户要求或出现连续性风险时才回溯更早章节。",
     "If rewriting, explain what changed and why.",
     "When final is approved, suggest hooks for the next chapter.",
     "Remain focused on /draft responsibilities until the writer issues another slash command; never trigger other workflows yourself."

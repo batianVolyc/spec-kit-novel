@@ -65,6 +65,32 @@ chapter_slug=$(printf "chapter_%03d" "$next_number")
 DRAFT_FILE="$DRAFT_DIR/${chapter_slug}_draft.md"
 FINAL_FILE="$FINAL_DIR/${chapter_slug}_final.md"
 
+# Collect the most recent finalised chapters to use as continuity references
+RECENT_FINALS_LIMIT=3
+RECENT_FINALS=()
+while IFS= read -r file; do
+    [[ -z "$file" ]] && continue
+    RECENT_FINALS+=("$file")
+done < <(find "$FINAL_DIR" -maxdepth 1 -type f -name 'chapter_*_final.md' \
+    | sort | tail -n "$RECENT_FINALS_LIMIT")
+
+build_recent_json() {
+    local first=true
+    local json="["
+    for file in "${RECENT_FINALS[@]}"; do
+        [[ -z "$file" ]] && continue
+        local escaped=$(printf '%s' "$file" | sed 's/\\/\\\\/g; s/"/\\"/g')
+        if $first; then
+            json+="\"$escaped\""
+            first=false
+        else
+            json+="\",\"$escaped\""
+        fi
+    done
+    json+="]"
+    printf '%s' "$json"
+}
+
 if [[ ! -f "$DRAFT_FILE" ]]; then
     cat <<DRAFT_HEADER > "$DRAFT_FILE"
 # ${chapter_slug//_/ }
@@ -130,9 +156,11 @@ LOG
     fi
 fi
 
+RECENT_FINALS_JSON=$(build_recent_json)
+
 if $JSON_MODE; then
-    printf '{"REPO_ROOT":"%s","NEXT_CHAPTER":"%s","DRAFT_FILE":"%s","FINAL_FILE":"%s","TIMELINE_FILE":"%s","ADAPTATION_LOG":"%s"}\n' \
-        "$REPO_ROOT" "$chapter_slug" "$DRAFT_FILE" "$FINAL_FILE" "$timeline_file" "$first_volume"
+    printf '{"REPO_ROOT":"%s","NEXT_CHAPTER":"%s","DRAFT_FILE":"%s","FINAL_FILE":"%s","TIMELINE_FILE":"%s","ADAPTATION_LOG":"%s","RECENT_FINALS":%s}\n' \
+        "$REPO_ROOT" "$chapter_slug" "$DRAFT_FILE" "$FINAL_FILE" "$timeline_file" "$first_volume" "$RECENT_FINALS_JSON"
 else
     cat <<INFO
 REPO_ROOT: $REPO_ROOT
@@ -141,5 +169,13 @@ DRAFT_FILE: $DRAFT_FILE
 FINAL_FILE: $FINAL_FILE
 TIMELINE_FILE: $timeline_file
 ADAPTATION_LOG: $first_volume
+RECENT_FINALS:
 INFO
+    if ((${#RECENT_FINALS[@]})); then
+        for file in "${RECENT_FINALS[@]}"; do
+            echo "  - $file"
+        done
+    else
+        echo "  - (none yet)"
+    fi
 fi
