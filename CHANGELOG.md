@@ -7,17 +7,29 @@ All notable changes to the Specify CLI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Changed
-- Re-oriented the toolkit for long-form fiction: `/spark`, `/lore`, `/weave`, `/draft`, and `/adapt` replace the software-oriented slash commands.
-- `specify init` now overlays novel-specific templates, scripts, prompt profiles, and scaffolding (ideas, lore, characters, plots, chapters, timelines, adaptation logs).
-- Added resource packaging so `templates/`, `scripts/`, and `config/` ship with the wheel.
+## [0.0.17+novel.1] - 2025-09-26
 
 ### Added
-- Story templates for world bibles, character dossiers, outlines, arcs, timelines, project overview, and adaptation logs.
-- Prompt profiles (`config/prompt-profiles.toml`) to guide agents through ideation, lore, plotting, drafting, and adaptation phases.
-- Bash/PowerShell helpers to create idea sessions, set up lore and plotting folders, manage draft/final chapters, and apply adaptations with log rotation.
+
+- `memory/novel-playbook.md` consolidating language, logging, and mode-discipline guardrails loaded by every slash command.
+- Story scaffolding applied during `specify init`: novel-specific templates, scripts (bash & PowerShell), prompt profiles, and workspace directories now overlay the upstream 0.0.54 template automatically.
+- 主编 / 写手 Persona 设定，以及章节计划与审稿日志模板，供 `/draft` 工作流自动引用。
+
+### Changed
+
+- Rewrote `/spark`, `/lore`, `/weave`, `/draft`, `/adapt` command templates (including Gemini manifests) to reference the shared playbook, trim repetitive warnings, and clarify record-keeping flows.
+- Simplified prompt profiles so agent configuration files reference the shared playbook while retaining phase-specific tone and response rules.
+- README and docs refreshed to highlight the five-phase story workflow and the unified guardrails.
+- CLI `init` command now brands the experience as Spec Kit · Novel, applies the novel overlay, and presents story-focused next steps.
+- `/draft` 引入“主编→写手→主编”链路并支持 `--auto` 连续创作多章，脚本输出章节计划与审稿日志路径，模板支持自动重跑直至剩余计数耗尽或遇阻。
+
+## [0.0.17] - 2025-09-22
+
+### Added
+
+- New `/clarify` command template to surface up to 5 targeted clarification questions for an existing spec and persist answers into a Clarifications section in the spec.
+- New `/analyze` command template providing a non-destructive cross-artifact discrepancy and alignment report (spec, clarifications, plan, tasks, constitution) inserted after `/tasks` and before `/implement`.
+	- Note: Constitution rules are explicitly treated as non-negotiable; any conflict is a CRITICAL finding requiring artifact remediation, not weakening of principles.
 
 ## [0.0.16] - 2025-09-22
 

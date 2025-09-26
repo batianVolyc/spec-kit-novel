@@ -1,29 +1,22 @@
-description = "Translate the approved concept into world-building lore and character dossiers."
+description = "Turn confirmed ideas into canon lore and character dossiers."
 
 prompt = """
 ---
-description: Convert approved ideas into world lore files and character dossiers.
+description: Consolidate confirmed decisions into world and character documentation.
 scripts:
   sh: .specify/scripts/bash/setup-lore.sh --json
   ps: .specify/scripts/powershell/setup-lore.ps1 -Json
 ---
 
-默认情况下请使用中文与用户交流，并在写入文件时以中文记录非代码内容，除非对方明确要求使用其他语言。
+阅读 `memory/novel-playbook.md` 后再行动，确保只把已确认的内容写入 lore 文档。
 
-当用户执行 `/lore` 时，请完成以下步骤：
+1. 运行 `{SCRIPT}` 获取 `WORLD_FILE`、`CHARACTERS_DIR`、`CHARACTER_TEMPLATE`、`ROSTER_FILE`、`LOG_FILE`、`PENDING_FILE`。
+2. 以最新创意基石、现有世界观与角色档案、`project_overview.md` 为权威依据；日志与待办仅作溯源，不作定论。
+3. 将当前对话追加到 `LOG_FILE`，保持 `LOG#` 标题与原文记录。
+4. 在 `PENDING_FILE` 跟踪待确认设定，使用复选框并附 `LOG#`；确认后再移入正式文档。
+5. 更新 `WORLD_FILE`：按章节整合新结论、替换冲突内容，并在修改处注明 `(引用 LOG#...)`；“待补充问题”保留未决事项。
+6. 为相关角色创建或更新档案，保持模板结构与连续性记录，必要时同步刷新 `roster.md`。
+7. 向作者汇报新增确认与未决问题，然后等待指示。
 
-1. 运行 `{SCRIPT}` 并读取 JSON，获取 `WORLD_FILE`、`CHARACTERS_DIR`、`CHARACTER_TEMPLATE`、`ROSTER_FILE` 以及 `LOG_FILE`、`PENDING_FILE`。
-2. 仅把 `ideas/` 中最新的创意基石（`session-*.md`）、现有的 `WORLD_FILE`、`CHARACTERS_DIR` 内角色档案与 `project_overview.md` 视为已确认的参考资料；对话日志与 `PENDING_FILE` 只用于追溯来源，不得直接采纳其中内容。
-3. 在此基础上确保设定连贯；随后以 `#### [LOG#YYYYMMDD-XX] 角色` 形式把本轮发言原文追加到 `LOG_FILE`，可在行尾标注标签，禁止改写旧日志。
-4. 在 `PENDING_FILE` 中维护所有未获确认的设定、问题与行动项（使用 `[ ]` 管理），并同步来源 `LOG#`；仅在用户明确确认后，再将条目移入正式档案。
-5. 获取确认后，读取 `WORLD_FILE` 并融合新信息：保持模板结构，替换冲突内容，行尾注明 `(引用 LOG#...)`，并在 `## 决策索引` 中登记最新结论；`## 待补充问题` 中仅保留仍未确认的条目。
-6. 针对已出现或新提及的角色：
-   - 若无档案，则以模板在 `CHARACTERS_DIR` 下创建对应 Markdown；
-   - 更新现有档案时重读全文，按章节融合新结论并替换冲突信息，逐项注明 `(引用 LOG#...)`；
-   - 在“连续性记录”表格中追加已确认的剧情摘要，忽略尚未确认的设想；
-   - 同步 `roster.md`，仅写入已确认的身份与状态。
-7. 用中文向用户汇报：哪些内容已确认写入档案，哪些仍在 `PENDING_FILE` 中等待确认。提出澄清问题后需暂停，待用户逐条答复。
-8. 在用户输入新的 slash 指令之前，持续保持 `/lore` 模式，不触发其他脚本或跳转到 `/weave`、`/draft` 等流程。
-
-保持档案的一致性与权威性，避免创建重复条目；如发现矛盾，请显式标注并提出建议。收到新的 slash 指令前，请持续停留在 `/lore` 模式。
+在作者输入新命令前，保持 `/lore` 模式。
 """

@@ -14,11 +14,13 @@ Specify CLI - Setup tool for Specify projects
 
 Usage:
     uvx specify-cli.py init <project-name>
+    uvx specify-cli.py init .
     uvx specify-cli.py init --here
 
 Or install globally:
     uv tool install --from specify-cli.py specify-cli
     specify init <project-name>
+    specify init .
     specify init --here
 """
 
@@ -93,7 +95,7 @@ BANNER = """
 ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝   
 """
 
-TAGLINE = "GitHub Spec Kit - Spec-Driven Development Toolkit"
+TAGLINE = "Spec Kit · Novel - Story Development Toolkit"
 class StepTracker:
     """Track and render hierarchical steps without emojis, similar to Claude Code tree output.
     Supports live auto-refresh via an attached refresh callback.
@@ -193,9 +195,9 @@ def get_key():
     key = readchar.readkey()
     
     # Arrow keys
-    if key == readchar.key.UP:
+    if key == readchar.key.UP or key == readchar.key.CTRL_P:
         return 'up'
-    if key == readchar.key.DOWN:
+    if key == readchar.key.DOWN or key == readchar.key.CTRL_N:
         return 'down'
     
     # Enter/Return
@@ -731,6 +733,7 @@ def apply_novel_scaffold(project_path: Path, tracker: StepTracker | None = None)
         templates_root = resource_root / "templates"
         scripts_root = resource_root / "scripts"
         config_root = resource_root / "config"
+        memory_root = resource_root / "memory"
 
         commands_src = templates_root / "commands"
         story_src = templates_root / "story"
@@ -748,7 +751,6 @@ def apply_novel_scaffold(project_path: Path, tracker: StepTracker | None = None)
             gemini_dest.parent.mkdir(parents=True, exist_ok=True)
             _replace_directory(gemini_commands_src, gemini_dest)
 
-        # Scripts for bash and PowerShell (root + .specify copies)
         if scripts_root.exists():
             _replace_directory(scripts_root, project_path / "scripts")
             for shell_name in ("bash", "powershell"):
@@ -758,7 +760,6 @@ def apply_novel_scaffold(project_path: Path, tracker: StepTracker | None = None)
                     shell_dest.parent.mkdir(parents=True, exist_ok=True)
                     _replace_directory(shell_src, shell_dest)
 
-        # Prompt configuration
         if config_root.exists():
             config_dest = specify_dir / "config"
             config_dest.mkdir(parents=True, exist_ok=True)
@@ -769,7 +770,16 @@ def apply_novel_scaffold(project_path: Path, tracker: StepTracker | None = None)
                 else:
                     shutil.copy2(item, target)
 
-        # Creative workspace directories
+        if memory_root.exists():
+            memory_dest = project_path / "memory"
+            memory_dest.mkdir(parents=True, exist_ok=True)
+            for item in memory_root.iterdir():
+                target = memory_dest / item.name
+                if item.is_dir():
+                    _replace_directory(item, target)
+                else:
+                    shutil.copy2(item, target)
+
         for directory in [
             project_path / "ideas",
             project_path / "lore",
@@ -777,6 +787,8 @@ def apply_novel_scaffold(project_path: Path, tracker: StepTracker | None = None)
             project_path / "plots",
             project_path / "chapters" / "draft",
             project_path / "chapters" / "final",
+            project_path / "chapters" / "plan",
+            project_path / "chapters" / "editor",
             project_path / "timelines",
             project_path / "logs" / "adaptations",
         ]:
@@ -870,7 +882,7 @@ def ensure_executable_scripts(project_path: Path, tracker: StepTracker | None = 
 
 @app.command()
 def init(
-    project_name: str = typer.Argument(None, help="Name for your new project directory (optional if using --here)"),
+    project_name: str = typer.Argument(None, help="Name for your new project directory (optional if using --here, or use '.' for current directory)"),
     ai_assistant: str = typer.Option(None, "--ai", help="AI assistant to use: claude, gemini, copilot, cursor, qwen, opencode, codex, windsurf, kilocode, or auggie"),
     script_type: str = typer.Option(None, "--script", help="Script type to use: sh or ps"),
     ignore_agent_tools: bool = typer.Option(False, "--ignore-agent-tools", help="Skip checks for AI agent tools like Claude Code"),
@@ -882,7 +894,7 @@ def init(
     github_token: str = typer.Option(None, "--github-token", help="GitHub token to use for API requests (or set GH_TOKEN or GITHUB_TOKEN environment variable)"),
 ):
     """
-    Initialize a new Specify project from the latest template.
+    Initialize a new Spec Kit · Novel project from the latest template.
     
     This command will:
     1. Check that required tools are installed (git is optional)
@@ -904,7 +916,9 @@ def init(
         specify init my-project --ai windsurf
         specify init my-project --ai auggie
         specify init --ignore-agent-tools my-project
-        specify init --here --ai claude
+        specify init . --ai claude         # Initialize in current directory
+        specify init .                     # Initialize in current directory (interactive AI selection)
+        specify init --here --ai claude    # Alternative syntax for current directory
         specify init --here --ai codex
         specify init --here
         specify init --here --force  # Skip confirmation when current directory not empty
@@ -912,13 +926,18 @@ def init(
     # Show banner first
     show_banner()
     
+    # Handle '.' as shorthand for current directory (equivalent to --here)
+    if project_name == ".":
+        here = True
+        project_name = None  # Clear project_name to use existing validation logic
+    
     # Validate arguments
     if here and project_name:
         console.print("[red]Error:[/red] Cannot specify both project name and --here flag")
         raise typer.Exit(1)
     
     if not here and not project_name:
-        console.print("[red]Error:[/red] Must specify either a project name or use --here flag")
+        console.print("[red]Error:[/red] Must specify either a project name, use '.' for current directory, or use --here flag")
         raise typer.Exit(1)
     
     # Determine project directory
@@ -1056,7 +1075,7 @@ def init(
     
     # Download and set up project
     # New tree-based progress (no emojis); include earlier substeps
-    tracker = StepTracker("Initialize Specify Project")
+    tracker = StepTracker("Initialize Spec Kit · Novel Project")
     # Flag to allow suppressing legacy headings
     sys._specify_tracker_active = True
     # Pre steps recorded as completed before live rendering
@@ -1183,12 +1202,16 @@ def init(
         steps_lines.append(f"{step_num}. Set [cyan]CODEX_HOME[/cyan] environment variable before running Codex: [cyan]{cmd}[/cyan]")
         step_num += 1
 
-    steps_lines.append(f"{step_num}. Start the story workflow with your AI agent:")
-    steps_lines.append("   2.1 [cyan]/spark[/] - 打磨创意、提出必要追问与增补选项")
-    steps_lines.append("   2.2 [cyan]/lore[/] - 生成世界观与人物档案，补齐资料")
-    steps_lines.append("   2.3 [cyan]/weave[/] - 输出剧情纲要与篇章节奏")
-    steps_lines.append("   2.4 [cyan]/draft[/] - 写作章节草稿、自审后落稿")
-    steps_lines.append("   2.5 [cyan]/adapt[/] - 处理改写、异常与剧情调整")
+    steps_lines.append(f"{step_num}. Review [cyan]memory/novel-playbook.md[/cyan] for shared story workflow rules.")
+    step_num += 1
+
+    workflow_step = step_num
+    steps_lines.append(f"{workflow_step}. Kick off the story workflow with your AI agent:")
+    steps_lines.append(f"   {workflow_step}.1 [cyan]/spark[/] - 打磨灵感、梳理待决问题")
+    steps_lines.append(f"   {workflow_step}.2 [cyan]/lore[/] - 生成世界观与人物档案")
+    steps_lines.append(f"   {workflow_step}.3 [cyan]/weave[/] - 设计剧情纲要与篇章节奏")
+    steps_lines.append(f"   {workflow_step}.4 [cyan]/draft[/] - 写作章节草稿并完成自审")
+    steps_lines.append(f"   {workflow_step}.5 [cyan]/adapt[/] - 规划并执行改写/回溯任务")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1,2))
     console.print()

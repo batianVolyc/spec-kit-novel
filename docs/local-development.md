@@ -5,7 +5,7 @@ These notes help you iterate on the Spec Kit · Novel CLI without cutting a rele
 ## 1. Clone and Branch
 
 ```bash
-git clone https://github.com/batianVolyc/spec-kit-novel.git
+git clone https://github.com/your-org/spec-kit-novel.git
 cd spec-kit-novel
 git checkout -b feature/my-experiment
 ```
@@ -47,7 +47,7 @@ You can also target a pushed branch:
 
 ```bash
 git push origin feature/my-experiment
-uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git@feature/my-experiment specify init demo-branch
+uvx --from git+https://github.com/your-org/spec-kit-novel.git@feature/my-experiment specify init demo-branch
 ```
 
 ## 5. Verify Story Assets
@@ -99,7 +99,7 @@ python -m src.specify_cli init demo-fiction --ai claude --ignore-agent-tools --s
 | Symptom | Fix |
 |---------|-----|
 | New command template not copied | Ensure it exists under `templates/commands` and rerun `specify init` |
-| Missing prompt profiles | Copy `config/prompt-profiles.toml` into `.specify/config` or re-run init |
+| Missing prompt profiles | Copy `config/prompt-profiles.toml` into `.specify/config` (it references `memory/novel-playbook.md`) or re-run init |
 | Timeline not rotating | Confirm chapter finals were written; rotation happens on finalisation |
 | Adaptation log overflow | `/adapt` will create new volumes past entry 50 or ~80k characters |
 

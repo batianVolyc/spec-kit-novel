@@ -13,10 +13,10 @@ Spec Kit · Novel reuses the upstream `specify` CLI but ships a different set of
 
 ```bash
 # Persistent installation (recommended)
-uv tool install specify-cli --from git+https://github.com/batianVolyc/spec-kit-novel.git
+uv tool install specify-cli --from git+https://github.com/your-org/spec-kit-novel.git
 
 # One-off execution
-uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git specify init <PROJECT_NAME>
+uvx --from git+https://github.com/your-org/spec-kit-novel.git specify init <PROJECT_NAME>
 ```
 
 `specify check` still validates available agents so you can confirm your environment before starting a session.
@@ -44,10 +44,11 @@ All automation scripts ship in both Bash (`scripts/bash/*.sh`) and PowerShell (`
 ## After Initialisation
 
 You should see the novel toolkit directories:
-- `ideas/`, `lore/`, `characters/`, `plots/`, `chapters/`, `timelines/`, `logs/adaptations/`
+- `ideas/`, `lore/`, `characters/`, `plots/`, `chapters/`（含 `draft/`、`final/`、`plan/`、`editor/`）、`timelines/`, `logs/adaptations/`
 - `project_overview.md`
 - `.specify/templates/commands` containing `/spark`, `/lore`, `/weave`, `/draft`, `/adapt`
-- `.specify/config/prompt-profiles.toml` for prompt tuning
+- `.specify/config/prompt-profiles.toml` for prompt tuning (each profile references `memory/novel-playbook.md`)
+- `memory/novel-playbook.md` describing shared language, logging, and continuity guardrails
 
 From there you can launch your AI agent and start with `/spark`.
 
