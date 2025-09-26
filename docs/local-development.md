@@ -5,7 +5,7 @@ These notes help you iterate on the Spec Kit · Novel CLI without cutting a rele
 ## 1. Clone and Branch
 
 ```bash
-git clone https://github.com/your-org/spec-kit-novel.git
+git clone https://github.com/batianVolyc/spec-kit-novel.git
 cd spec-kit-novel
 git checkout -b feature/my-experiment
 ```
@@ -47,7 +47,7 @@ You can also target a pushed branch:
 
 ```bash
 git push origin feature/my-experiment
-uvx --from git+https://github.com/your-org/spec-kit-novel.git@feature/my-experiment specify init demo-branch
+uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git@feature/my-experiment specify init demo-branch
 ```
 
 ## 5. Verify Story Assets

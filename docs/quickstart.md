@@ -5,9 +5,9 @@ Spec Kit · Novel keeps the familiar `specify` CLI while turning the workflow to
 ## 1. Install the CLI
 
 ```bash
-uv tool install specify-cli --from git+https://github.com/your-org/spec-kit-novel.git
+uv tool install specify-cli --from git+https://github.com/batianVolyc/spec-kit-novel.git
 # or
-uvx --from git+https://github.com/your-org/spec-kit-novel.git specify init dream-project
+uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git specify init dream-project
 ```
 
 > Tip: Run `specify check` to verify your preferred AI agent (Claude Code, Gemini CLI, Cursor, etc.) is available before starting a session.

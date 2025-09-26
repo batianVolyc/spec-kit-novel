@@ -12,14 +12,14 @@ Spec Kit · Novel builds on the upstream Spec Kit 0.0.54 template and swaps ever
 Install the CLI with `uv` (recommended):
 
 ```bash
-uv tool install specify-cli --from git+https://github.com/your-org/spec-kit-novel.git
+uv tool install specify-cli --from git+https://github.com/batianVolyc/spec-kit-novel.git
 specify init my-fiction-project
 ```
 
 or run it ad hoc:
 
 ```bash
-uvx --from git+https://github.com/your-org/spec-kit-novel.git specify init my-fiction-project
+uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git specify init my-fiction-project
 ```
 
 `specify check` still verifies your local AI tools (Claude Code, Gemini CLI, Copilot, Cursor, etc.). Pick whichever agent you prefer; prompt profiles in `.specify/config/prompt-profiles.toml` keep tone and expectations consistent per phase.

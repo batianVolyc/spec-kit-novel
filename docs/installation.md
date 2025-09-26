@@ -13,10 +13,10 @@ Spec Kit · Novel reuses the upstream `specify` CLI but ships a different set of
 
 ```bash
 # Persistent installation (recommended)
-uv tool install specify-cli --from git+https://github.com/your-org/spec-kit-novel.git
+uv tool install specify-cli --from git+https://github.com/batianVolyc/spec-kit-novel.git
 
 # One-off execution
-uvx --from git+https://github.com/your-org/spec-kit-novel.git specify init <PROJECT_NAME>
+uvx --from git+https://github.com/batianVolyc/spec-kit-novel.git specify init <PROJECT_NAME>
 ```
 
 `specify check` still validates available agents so you can confirm your environment before starting a session.
