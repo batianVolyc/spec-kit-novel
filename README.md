@@ -87,8 +87,8 @@ If you customise language, tone, or logging rules, edit `memory/novel-playbook.m
 
 - **主编 Persona（`memory/personas/editor.md`）**：读取创意基石、剧情纲要、角色档案、时间线与近三章终稿，覆写 `chapters/plan/chapter_XXX_plan.md` 形成《章节创作指南》，列出必读资料、分段结构、人物要点与风险提醒。
 - **写手 Persona（`memory/personas/writer.md`）**：遵循创作指南，在 `chapters/draft/chapter_XXX_draft.md` 撰写草稿并填写 `Draft / Review Findings / Action Taken`，`Final Manuscript` 留待主编批准后填写。
-- **主编审稿**：在 `chapters/editor/chapter_XXX_editor.md` 记录评语、评分与处理方案，可小修或退稿（最多两轮）。通过后同步 `Final Manuscript`、更新时间线与角色档案。
-- **自动续写**：使用 `/draft --auto N` 可连续生成 N 章；脚本会返回 `AUTO_COUNT`，模板在每章定稿后自动减计数并重新运行脚本。若两轮重写仍不过或出现重大设定冲突，会立即停止自动流程并提示人工介入。
+- **审稿与重写**：主编在 `chapters/editor/chapter_XXX_editor.md` 记录评分、反馈与 TODO；退稿会驱动写手重写（最多两轮），若仍不过关则由主编接管并亲自修订至可定稿。
+- **自动续写**：`/draft --auto N` 会在章末自动减计数并重跑脚本进入下一章；遇到退稿超限或重大设定冲突时，流程自动停下并提示人工决策。
 
 ---
 
@@ -96,7 +96,7 @@ If you customise language, tone, or logging rules, edit `memory/novel-playbook.m
 
 - **Stay iterative.** Finish `/spark` rounds before `/lore`, and revisit `/spark` whenever major decisions shift.
 - **Keep humans in the loop.** `/draft` performs a self-review but still expects you to accept or request changes.
-- **Collaborative drafting.** `/draft` 自动生成《章节创作指南》，由主编与写手 Persona 协同执行，并可通过 `--auto` 持续创作多章。  
+- **Collaborative drafting.** `/draft` 先输出 TODO 清单与章节计划，再由写手创作、主编审稿；支持 `--auto` 连续创作多章且遇阻会自动停下。  
 - **Use `/adapt` liberally.** It’s designed for late-game retcons, new POV characters, or structural overhauls.
 - **Skim the logs.** Slash commands annotate every update with `LOG#` references so you can trace context quickly.
 

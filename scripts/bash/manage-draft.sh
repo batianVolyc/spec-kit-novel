@@ -103,55 +103,7 @@ if [[ ! -f "$DRAFT_FILE" ]]; then
 DRAFT_HEADER
 fi
 
-if [[ ! -f "$PLAN_FILE" ]]; then
-    TEMPLATE="$REPO_ROOT/.specify/templates/story/chapter-plan-template.md"
-    if [[ -f "$TEMPLATE" ]]; then
-        sed \
-            -e "s/\[CHAPTER_SLUG\]/${chapter_slug//_/ }/" \
-            "$TEMPLATE" > "$PLAN_FILE"
-    else
-        cat <<'PLAN' > "$PLAN_FILE"
-# Chapter Plan ${chapter_slug//_/ }
-
-## 章节概览
-- 待主编填写
-
-## 参考资料
-- 待主编填写
-
-## 分段结构
-- 待主编填写
-
-## 人物要点
-- 待主编填写
-
-## 情节要素
-- 待主编填写
-
-## 风险与提醒
-- 待主编填写
-PLAN
-    fi
-fi
-
-if [[ ! -f "$EDITOR_LOG_FILE" ]]; then
-    TEMPLATE="$REPO_ROOT/.specify/templates/story/editor-review-template.md"
-    if [[ -f "$TEMPLATE" ]]; then
-        sed \
-            -e "s/\[CHAPTER_SLUG\]/${chapter_slug//_/ }/" \
-            -e "s/\[ROUND\]/1/" \
-            "$TEMPLATE" > "$EDITOR_LOG_FILE"
-    else
-        cat <<'EDITLOG' > "$EDITOR_LOG_FILE"
-# Editor Review ${chapter_slug//_/ }
-
-- 审稿轮次：第 1 次
-- 状态：待填写
-EDITLOG
-    fi
-fi
-
-# Decide which timeline file to use (30 chapter windows or size constraint)
+# Pre-compute timeline range for plan references
 range_start=$(( ((next_number - 1) / 30) * 30 + 1 ))
 range_end=$((range_start + 29))
 start_label=$(printf "%03d" "$range_start")
@@ -180,6 +132,132 @@ if [[ ! -f "$timeline_file" ]]; then
 | Chapter | Time & Location | POV | Key Events | Consequences |
 | ------- | ---------------- | --- | ---------- | ------------ |
 TL
+    fi
+fi
+
+if [[ ! -f "$PLAN_FILE" ]]; then
+    TEMPLATE="$REPO_ROOT/.specify/templates/story/chapter-plan-template.md"
+    chapter_title="Chapter ${chapter_slug#chapter_}"
+    project_overview_path="$REPO_ROOT/project_overview.md"
+    outline_path="$REPO_ROOT/plots/outline.md"
+    arcs_path="$REPO_ROOT/plots/arcs.md"
+    writer_rewrite_count="0"
+    editor_override_count="0"
+
+    if [[ ${#RECENT_FINALS[@]} -gt 0 ]]; then
+        RECENT_FINALS_TEXT=""
+        for rf in "${RECENT_FINALS[@]}"; do
+            RECENT_FINALS_TEXT+="  - $rf\n"
+        done
+    else
+        RECENT_FINALS_TEXT="  - （暂无终稿）\n"
+    fi
+
+    if [[ -f "$TEMPLATE" ]]; then
+        CHAPTER_TITLE="$chapter_title" \
+        PROJECT_OVERVIEW_PATH="$project_overview_path" \
+        OUTLINE_PATH="$outline_path" \
+        ARCS_PATH="$arcs_path" \
+        TIMELINE_PATH="$timeline_file" \
+        RECENT_FINALS="$RECENT_FINALS_TEXT" \
+        WRITER_REWRITE_COUNT="$writer_rewrite_count" \
+        EDITOR_OVERRIDE_COUNT="$editor_override_count" \
+        PLAN_FILE="$PLAN_FILE" \
+        TEMPLATE="$TEMPLATE" \
+        python - <<'PY'
+import os
+
+template_path = os.environ['TEMPLATE']
+output_path = os.environ['PLAN_FILE']
+replacements = {
+    '${CHAPTER_TITLE}': os.environ['CHAPTER_TITLE'],
+    '${PROJECT_OVERVIEW_PATH}': os.environ['PROJECT_OVERVIEW_PATH'],
+    '${OUTLINE_PATH}': os.environ['OUTLINE_PATH'],
+    '${ARCS_PATH}': os.environ['ARCS_PATH'],
+    '${TIMELINE_PATH}': os.environ['TIMELINE_PATH'],
+    '${RECENT_FINALS}': os.environ['RECENT_FINALS'],
+    '${WRITER_REWRITE_COUNT}': os.environ['WRITER_REWRITE_COUNT'],
+    '${EDITOR_OVERRIDE_COUNT}': os.environ['EDITOR_OVERRIDE_COUNT'],
+}
+
+with open(template_path, 'r', encoding='utf-8') as fh:
+    content = fh.read()
+for key, value in replacements.items():
+    content = content.replace(key, value)
+with open(output_path, 'w', encoding='utf-8') as fh:
+    fh.write(content)
+PY
+    else
+        cat <<'PLAN' > "$PLAN_FILE"
+# 创作指南：${CHAPTER_TITLE}
+
+## 1. 章节概览
+- **章节定位**：
+- **情绪基调**：
+- **目标读感**：
+- **篇幅预估**：
+
+## 2. TODO 清单
+| 序号 | 任务 | 说明 | 负责人 | 状态 |
+| ---- | ---- | ---- | ------ | ---- |
+| 1 | | | 写手 | 待处理 |
+| 2 | | | 主编 | 待处理 |
+
+## 3. 参考资料
+- **项目概览**：${PROJECT_OVERVIEW_PATH}
+- **剧情纲要**：${OUTLINE_PATH}
+- **剧情线**：${ARCS_PATH}
+- **时间线**：${TIMELINE_PATH}
+- **近三章终稿**：
+${RECENT_FINALS}
+- **角色档案**：
+  - （主编补充）
+- **其他补充**：
+  - （主编补充）
+
+## 4. 分段结构
+| 段落 | 目的 | 起止场景 | 关键情节 | 伏笔 / 呼应 |
+| ---- | ---- | -------- | -------- | ------------ |
+| 第一段 | | | | |
+| 第二段 | | | | |
+| 第三段 | | | | |
+| 结尾 | | | | |
+
+## 5. 人物要点
+- **主角**：
+- **关键配角 / 对手**：
+- **人物状态提醒**：
+
+## 6. 情节元素
+- **必备事件**：
+- **可选增强**：
+- **节奏提醒**：
+- **道具 / 线索**：
+
+## 7. 风险与提醒
+- 
+
+## 8. 尝试计数
+- 写手重写次数：${WRITER_REWRITE_COUNT}
+- 主编接管次数：${EDITOR_OVERRIDE_COUNT}
+PLAN
+    fi
+fi
+
+if [[ ! -f "$EDITOR_LOG_FILE" ]]; then
+    TEMPLATE="$REPO_ROOT/.specify/templates/story/editor-review-template.md"
+    if [[ -f "$TEMPLATE" ]]; then
+        sed \
+            -e "s/\[CHAPTER_SLUG\]/${chapter_slug//_/ }/" \
+            -e "s/\[ROUND\]/1/" \
+            "$TEMPLATE" > "$EDITOR_LOG_FILE"
+    else
+        cat <<'EDITLOG' > "$EDITOR_LOG_FILE"
+# Editor Review ${chapter_slug//_/ }
+
+- 审稿轮次：第 1 次
+- 状态：待填写
+EDITLOG
     fi
 fi
 

@@ -61,9 +61,9 @@ Outputs include:
 ```
 
 执行 `/draft` 会触发“主编 → 写手 → 主编”三段协作：
-1. **主编 persona** 汇总创意基石、纲要、角色档案、近三章终稿，覆写 `chapters/plan/chapter_001_plan.md` 为《章节创作指南》；
-2. **写手 persona** 依据指南撰写草稿，填充 `Draft` / `Review Findings` / `Action Taken` 区块；
-3. **主编 persona** 审稿并写入 `chapters/editor/chapter_001_editor.md`，可小修草稿或退稿（最多两轮）。通过后填写 `Final Manuscript`、复制终稿到 `chapters/final`、并更新时间线/角色档案/改写日志。
+1. **主编 persona** 汇总创意基石、纲要、角色档案、近三章终稿，覆写 `chapters/plan/chapter_001_plan.md`，生成带 TODO 清单与尝试计数的《章节创作指南》。
+2. **写手 persona** 按指南撰写草稿，写入 `### Draft` 与 `### Writer Notes`（列出待确认事项），`### Final Manuscript` 留空。写入通过 `cat <<'EOF' > file` 方式完成，并可用 `ReadFile` 展示一次完整草稿。
+3. **主编 persona** 审稿并记录到 `chapters/editor/chapter_001_editor.md`：若退稿会更新 TODO 与重写次数；两轮仍不过关时主编直接接管并修订成定稿。通过后填入 `Final Manuscript`、写入 `chapters/final/`，并更新时间线、角色档案、改写日志。
 
 `--auto 3` 表示从当前章起连续创作三章。每章定稿后自动减计数、重新运行脚本并生成下一章；若遇到两次退稿仍不过或出现设定冲突，会停止自动流程并提示人工介入。
 

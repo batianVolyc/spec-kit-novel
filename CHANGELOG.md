@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified prompt profiles so agent configuration files reference the shared playbook while retaining phase-specific tone and response rules.
 - README and docs refreshed to highlight the five-phase story workflow and the unified guardrails.
 - CLI `init` command now brands the experience as Spec Kit · Novel, applies the novel overlay, and presents story-focused next steps.
-- `/draft` 引入“主编→写手→主编”链路并支持 `--auto` 连续创作多章，脚本输出章节计划与审稿日志路径，模板支持自动重跑直至剩余计数耗尽或遇阻。
+- `/draft` 引入“主编→写手→主编”链路，章节计划包含 TODO 与尝试计数，草稿/审稿改为后台写入；支持 `--auto` 连续创作多章，在两轮退稿后由主编接管完成定稿。
 
 ## [0.0.17] - 2025-09-22
 

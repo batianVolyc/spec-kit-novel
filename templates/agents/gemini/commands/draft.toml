@@ -8,52 +8,36 @@ scripts:
   ps: .specify/scripts/powershell/manage-draft.ps1 -Json
 ---
 
-在执行前阅读 `memory/novel-playbook.md`，并加载主编 persona（`memory/personas/editor.md`）与写手 persona（`memory/personas/writer.md`）。仅在作者明确要求进入写作阶段时启动。
+在执行前阅读 `memory/novel-playbook.md`，加载主编 persona（`memory/personas/editor.md`）与写手 persona（`memory/personas/writer.md`）。仅在作者明确进入写作阶段时运行。
 
-若脚本 JSON 中 `AUTO_COUNT` > 1，在自动续写下一章前重新运行脚本时需追加参数（POSIX：`--auto-count 剩余数`，PowerShell：`-AutoCount 剩余数`）。
-- 若 `$ARGUMENTS` 包含 `--auto`：
-  - 可接受写法：`--auto 20`、`--auto=20`、`--auto20`；若未提供数字则默认 1。
-  - 该数字表示从当前章节起需连续创作的章数；首次运行脚本时据此带上 `--auto-count` / `-AutoCount`。
-  - 每成功定稿一章后，剩余计数减一；若仍 ≥1，则继续下一章，否则停止自动流程。
+### 自动参数
+- `$args` 支持 `--auto 12` / `--auto=12` / `--auto12`；缺失数字视为 1。
+- 解析后记为 `auto_target`。首次执行 `{SCRIPT}` 获得 JSON；若 `AUTO_COUNT` 为 0 且 `auto_target` > 0，则以 `auto_target` 作为剩余章节数。
+- 进入下一章前必须重新执行 `{SCRIPT}`，并附上最新剩余计数（POSIX：`--auto-count 剩余数`，PowerShell：`-AutoCount 剩余数`）。
 
-## 流程概览
-- `{SCRIPT}` 返回：`PLAN_FILE`、`EDITOR_LOG`、`DRAFT_FILE`、`FINAL_FILE`、`TIMELINE_FILE`、`ADAPTATION_LOG`、`RECENT_FINALS`、`AUTO_COUNT`。
-- `AUTO_COUNT > 1` 表示作者授权自动连续创作多章；流程成功后可减一计数并继续下一章。
-- 每章最多允许两轮退稿-重写；超出后需停止自动续写，标记为人工待办。
+### 总流程
+1. 运行脚本，解析 `PLAN_FILE`、`EDITOR_LOG`、`DRAFT_FILE`、`FINAL_FILE`、`TIMELINE_FILE`、`ADAPTATION_LOG`、`RECENT_FINALS`、`AUTO_COUNT`。
+2. 主编 persona 更新章节计划：填写 TODO 清单、参考资料、分段结构、风险提醒，并维护“写手重写次数”“主编接管次数”。
+3. 写手 persona 根据计划撰写草稿，输出正文与待确认事项；草稿写入文件后可 `ReadFile` 展示一次，不要输出 diff。
+4. 主编 persona 审稿：
+   - 在 `EDITOR_LOG` 记录结论、评分、详细反馈、TODO。
+   - 若退稿，需将“写手重写次数”+1，并引导写手重新创作（最多两轮）。
+   - 若写手已重写两轮仍不过关，主编必须亲自修订/重写至可接受，并将“主编接管次数”+1。
+5. 审稿通过后，主编填入 `Final Manuscript`、写入终稿文件，并更新时间线、角色档案、改写日志。
+6. 汇报结果，若剩余自动章节数 > 1 则减一后继续下一章；若遇到阻塞需立即停止自动续写并说明原因。
 
-## 步骤
+### 写入规范
+- 使用 `ShellCommand` (`cat <<'EOF' > PATH`) 写入计划、草稿、终稿等文件；不要输出逐行 diff。
+- 写手草稿采用以下结构：
+  - `### Draft`
+  - `### Writer Notes`
+  - `### Final Manuscript`（初始留空）
+- 主编审稿日志需记录轮次、评分、详细反馈、TODO 与状态。
 
-1. **运行脚本并整理资料**
-   - 解析 `$ARGUMENTS` 得出 `auto_remaining`（默认 1）。在仓库根目录执行 `{SCRIPT}`，并立即附上 `--auto-count auto_remaining` / `-AutoCount auto_remaining`。
-   - 自动续写时，每章开始前都需重跑脚本并带上更新后的剩余计数。
-   - 解析 JSON，确认所有文件路径与剩余计数。
-   - 收集资料：`project_overview.md`、`plots/outline.md`、`plots/arcs.md`、相关角色档案、时间线文件、`RECENT_FINALS` 中列出的终稿。
+### 显示策略
+- 写入文件后可使用 `ReadFile` 展示结果（一次即可）。
+- 向用户输出总结：章节概要、审稿结论、关键更新文件、风险/待确认项、尝试计数、剩余自动章节数。
+- 禁止跨 Slash、自行跳转流程或省略退稿步骤。
 
-2. **主编 persona：编写章节创作指南**
-   - 覆写 `PLAN_FILE`：填入章节概览、参考资料（附文件路径）、分段结构、人物要点、情节元素、风险与提醒。
-   - 若发现设定缺口或需作者确认的事项，标注在风险区并同步到待确认清单（引用 `LOG#`）。
-
-3. **写手 persona：根据指南撰写草稿**
-   - 研读最新 `PLAN_FILE` 及参考资料。
-   - 在 `DRAFT_FILE` 写出四个区块：`Draft`、`Review Findings`、`Action Taken`、`Final Manuscript`（先留空）。
-   - 自检时说明潜在风险或未决问题，引用 `LOG#`。
-
-4. **主编 persona：审稿与修订**
-   - 对照 `PLAN_FILE`、`DRAFT_FILE` 与既有资料，逐项评估剧情、人物、节奏。
-   - 在 `EDITOR_LOG` 记录结论（通过/小修/退稿）、评分与详细反馈。
-   - 如仅需小修，可直接在 `DRAFT_FILE` 中进行轻量修改并注明理由。
-   - 若退稿：更新 `PLAN_FILE`、在 `EDITOR_LOG` 给出重写指引，提醒写手进入下一轮；总退稿次数不得超过 2。
-   - 审稿通过后：
-     - 填写 `DRAFT_FILE` 的 `Final Manuscript`。
-     - 将最终文本写入 `FINAL_FILE`。
-     - 更新相关时间线、角色档案、适用日志，并引用 `LOG#`。
-
-5. **输出总结并处理自动续写**
-   - 向用户汇报：章节摘要、审稿结论、已更新文件、剩余自动计数、风险与待确认事项。
-   - 若 `AUTO_COUNT` > 1 且流程顺利：
-     - 计算 `auto_remaining = AUTO_COUNT - 1`，在回复中说明剩余章数。
-     - 重新运行 `{SCRIPT}`（附带更新后的 `--auto-count auto_remaining` / `-AutoCount auto_remaining`），回到步骤 1。
-   - 若出现阻塞（两次退稿后仍不过、重大设定冲突、脚本失败等）：停止自动续写，记录原因与建议，等待作者指示。
-
-在收到作者新指令前始终停留在 `/draft` 模式；除 `--auto` 已授权的情况外，不得自行切换到其他 Slash 命令。
+遵循以上流程后再继续下一章，直到 `AUTO_COUNT` 耗尽或出现阻塞。
 """
