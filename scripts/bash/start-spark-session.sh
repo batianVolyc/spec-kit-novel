@@ -128,7 +128,7 @@ export NOVEL_IDEA_SESSION_PENDING="$SESSION_PENDING"
 
 if [[ ! -f "$SESSION_LOG" ]]; then
     session_label="$(date +%Y-%m-%d)"
-    cat <<LOG > "$SESSION_LOG"
+    cat <<'LOG' > "$SESSION_LOG"
 # /spark 对话记录 $session_label
 
 > 仅记录用户与 /spark 之间的往返对话。请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题记录每条发言，XX 递增；正文保持原话，便于引用。
@@ -143,7 +143,7 @@ LOG
 fi
 
 if [[ ! -f "$SESSION_PENDING" ]]; then
-    cat <<PENDING > "$SESSION_PENDING"
+    cat <<'PENDING' > "$SESSION_PENDING"
 # /spark 待确认事项
 
 - 记录所有尚未得到作者确认的提案、问题与待办，并标注来源 `LOG#`。

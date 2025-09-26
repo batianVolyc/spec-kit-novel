@@ -9,7 +9,7 @@ for arg in "$@"; do
             JSON_MODE=true
             ;;
         --help|-h)
-            cat <<USAGE
+            cat <<'USAGE'
 Usage: $0 [--json]
   --json    Output machine-readable JSON
 USAGE
@@ -93,7 +93,7 @@ if [[ ! -f "$PROJECT_OVERVIEW" ]]; then
     if [[ -n "$PROJECT_TEMPLATE" ]]; then
         sed "s/\[TITLE\]/TODO Title/" "$PROJECT_TEMPLATE" > "$PROJECT_OVERVIEW"
     else
-        cat <<OV > "$PROJECT_OVERVIEW"
+        cat <<'OV' > "$PROJECT_OVERVIEW"
 # Project Overview
 
 (Generated after /weave completes.)
@@ -103,7 +103,7 @@ fi
 
 LOG_FILE="$LOG_DIR/weave-$(date +%Y%m%d).md"
 if [[ ! -f "$LOG_FILE" ]]; then
-    cat <<LOG > "$LOG_FILE"
+    cat <<'LOG' > "$LOG_FILE"
 # /weave 对话记录 $(date +%Y-%m-%d)
 
 > 记录与 /weave 相关的讨论。每条发言请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题继续编号，正文保持原话，可在行尾添加标签。待确认决策请同步到 pending 清单。
@@ -119,7 +119,7 @@ fi
 
 PENDING_FILE="$PENDING_DIR/todo.md"
 if [[ ! -f "$PENDING_FILE" ]]; then
-    cat <<PENDING > "$PENDING_FILE"
+    cat <<'PENDING' > "$PENDING_FILE"
 # /weave 待确认事项
 
 - 汇总尚未确认的结构调整、篇章安排与节奏建议，并标注来源 `LOG#`。
@@ -134,7 +134,7 @@ if $JSON_MODE; then
     printf '{"REPO_ROOT":"%s","PLOTS_DIR":"%s","OUTLINE_FILE":"%s","ARCS_FILE":"%s","PROJECT_OVERVIEW":"%s","LOG_FILE":"%s","PENDING_FILE":"%s"}\n' \
         "$REPO_ROOT" "$PLOTS_DIR" "$OUTLINE_FILE" "$ARCS_FILE" "$PROJECT_OVERVIEW" "$LOG_FILE" "$PENDING_FILE"
 else
-    cat <<INFO
+    cat <<'INFO'
 REPO_ROOT: $REPO_ROOT
 PLOTS_DIR: $PLOTS_DIR
 OUTLINE_FILE: $OUTLINE_FILE

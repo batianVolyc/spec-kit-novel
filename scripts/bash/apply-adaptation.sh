@@ -9,7 +9,7 @@ for arg in "$@"; do
             JSON_MODE=true
             ;;
         --help|-h)
-            cat <<USAGE
+            cat <<'USAGE'
 Usage: $0 [--json]
   --json    Output machine-readable JSON
 USAGE
@@ -43,7 +43,7 @@ mkdir -p "$LOG_DIR"
 
 index_file="$LOG_DIR/index.md"
 if [[ ! -f "$index_file" ]]; then
-    cat <<IDX > "$index_file"
+    cat <<'IDX' > "$index_file"
 # Adaptation Log Index
 
 - [adaptations_001-050.md](adaptations_001-050.md)
@@ -94,7 +94,7 @@ create_log_file() {
         if [[ -f "$TEMPLATE" ]]; then
             sed "s/\[RANGE\]/${start_label}-${end_label}/" "$TEMPLATE" > "$target"
         else
-            cat <<LOG > "$target"
+            cat <<'LOG' > "$target"
 # Adaptation Log ${start_label}-${end_label}
 
 | Entry | Date | Trigger | Affected Artifacts | Summary |
@@ -131,7 +131,7 @@ if $JSON_MODE; then
     printf '{"REPO_ROOT":"%s","ADAPTATION_LOG":"%s","INDEX_FILE":"%s","PROJECT_OVERVIEW":"%s"}\n' \
         "$REPO_ROOT" "$current_log" "$index_file" "$PROJECT_OVERVIEW"
 else
-    cat <<INFO
+    cat <<'INFO'
 REPO_ROOT: $REPO_ROOT
 ADAPTATION_LOG: $current_log
 INDEX_FILE: $index_file

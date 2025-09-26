@@ -9,7 +9,7 @@ for arg in "$@"; do
             JSON_MODE=true
             ;;
         --help|-h)
-            cat <<USAGE
+            cat <<'USAGE'
 Usage: $0 [--json]
   --json    Output machine-readable JSON
 USAGE
@@ -112,7 +112,7 @@ fi
 
 ROSTER_FILE="$CHAR_DIR/roster.md"
 if [[ ! -f "$ROSTER_FILE" ]]; then
-    cat <<ROSTER > "$ROSTER_FILE"
+    cat <<'ROSTER' > "$ROSTER_FILE"
 # Character Roster
 
 | Name | Role | Status |
@@ -132,7 +132,7 @@ done
 
 LOG_FILE="$LOG_DIR/lore-$(date +%Y%m%d).md"
 if [[ ! -f "$LOG_FILE" ]]; then
-    cat <<LOG > "$LOG_FILE"
+    cat <<'LOG' > "$LOG_FILE"
 # /lore 对话记录 $(date +%Y-%m-%d)
 
 > 记录与 /lore 相关的往返内容。每条发言请使用 `#### [LOG#YYYYMMDD-XX] 角色` 标题继续编号，正文保持原话，可在行尾添加标签。
@@ -148,7 +148,7 @@ fi
 
 PENDING_FILE="$PENDING_DIR/todo.md"
 if [[ ! -f "$PENDING_FILE" ]]; then
-    cat <<PENDING > "$PENDING_FILE"
+    cat <<'PENDING' > "$PENDING_FILE"
 # /lore 待确认事项
 
 - 收录尚未获得作者确认的设定、问题与行动项，并标注来源 `LOG#`。
@@ -163,7 +163,7 @@ if $JSON_MODE; then
     printf '{"REPO_ROOT":"%s","WORLD_FILE":"%s","CHARACTERS_DIR":"%s","CHARACTER_TEMPLATE":"%s","ROSTER_FILE":"%s","LOG_FILE":"%s","PENDING_FILE":"%s"}\n' \
         "$REPO_ROOT" "$WORLD_FILE" "$CHAR_DIR" "$CHAR_TEMPLATE" "$ROSTER_FILE" "$LOG_FILE" "$PENDING_FILE"
 else
-    cat <<INFO
+    cat <<'INFO'
 REPO_ROOT: $REPO_ROOT
 WORLD_FILE: $WORLD_FILE
 CHARACTERS_DIR: $CHAR_DIR
